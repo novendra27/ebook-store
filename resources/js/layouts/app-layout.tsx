@@ -1,5 +1,8 @@
-import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
-import { type BreadcrumbItem } from '@/types';
+import { Toaster } from '@/components/ui/sonner';
+import BuyerLayoutTemplate from '@/layouts/app/app-header-layout';
+import SellerLayoutTemplate from '@/layouts/app/app-sidebar-layout';
+import { SharedData, type BreadcrumbItem } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { type ReactNode } from 'react';
 
 interface AppLayoutProps {
@@ -7,8 +10,23 @@ interface AppLayoutProps {
     breadcrumbs?: BreadcrumbItem[];
 }
 
-export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
-    <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-        {children}
-    </AppLayoutTemplate>
-);
+export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
+
+    if (auth.user.role == 'seller') {
+        return (
+            <SellerLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+                {children}
+                <Toaster />
+            </SellerLayoutTemplate>
+        );
+    }
+
+    return (
+        <BuyerLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+            {children}
+            <Toaster />
+        </BuyerLayoutTemplate>
+    )
+};
