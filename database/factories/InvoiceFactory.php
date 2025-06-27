@@ -18,7 +18,8 @@ class InvoiceFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
+            'user_id' => User::where('role', 'buyer')->inRandomOrder()->first()?->id ??
+                User::factory()->create(['role' => 'buyer'])->id,
             'amount' => $this->faker->numberBetween(50000, 1000000),
             'status' => $this->faker->randomElement(['pending', 'paid', 'failed']),
             'invoice_code' => 'INV-' . $this->faker->unique()->numerify('######'),

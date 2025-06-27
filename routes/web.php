@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\EnsureSeller;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -13,5 +15,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+Route::middleware(['auth', EnsureSeller::class])->group(function () {
+    Route::get('/seller', function () {
+        return Inertia::render('seller/dashboard');
+    })->name('seller.dashboard');
+
+    Route::resource(('seller/transactions'), TransactionController::class) 
+        ->only(['index', 'show'])
+        ->names('transactions');
+});
+
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

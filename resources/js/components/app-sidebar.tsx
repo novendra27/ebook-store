@@ -9,22 +9,22 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: route('seller.dashboard'),
         icon: LayoutGrid,
     },
     {
         title: 'Product',
-        href: '/product',
+        href: '/',
         icon: Package,
     },
     {
         title: 'Transaction',
-        href: '/transaction',
+        href: route('transactions.index'),
         icon: CreditCard,
     },
     {
         title: 'Balance',
-        href: '/balance',
+        href: '/',
         icon: Wallet,
     },
 ];
