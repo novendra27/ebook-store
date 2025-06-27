@@ -3,6 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\ProductDetail;
+use App\Models\Seller;
+use App\Models\Product;
+use App\Models\Cart;
+use App\Models\Invoice;
+use App\Models\InvoiceProduct;
+use App\Models\Balance;
+use App\Models\PaymentType;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +21,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create users first
         $users = [
             [
                 'name' => 'Adi Novendra',
@@ -31,6 +39,29 @@ class DatabaseSeeder extends Seeder
 
         foreach ($users as $user) {
             User::create($user);
+            if ($user['role'] === 'seller') {
+                Seller::factory()->create([
+                    'user_id' => User::where('email', $user['email'])->first()->id,
+                ]);
+            }
         }
+
+        $payments = [
+            ['name' => 'Paid Products'],
+            ['name' => 'Free Products'],
+            ['name' => 'Pay What You Want Products'],
+        ];
+        
+        foreach ($payments as $payment) {
+            PaymentType::create($payment);
+        }
+
+        // Data Dummy
+        ProductDetail::factory()->count(10)->create();
+        Product::factory()->count(10)->create();
+        Cart::factory()->count(10)->create();
+        Invoice::factory()->count(10)->create();
+        InvoiceProduct::factory()->count(10)->create();
+        Balance::factory()->count(10)->create();
     }
 }
