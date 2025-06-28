@@ -65,7 +65,11 @@ export const columns: ColumnDef<Invoice>[] = [
     header: 'Date',
     cell: ({ row }) => {
       const date = new Date(row.getValue('created_at') as string);
-      const formatted = date.toLocaleDateString('id-ID');
+      const formatted = date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
       return <div className="font-medium">{formatted}</div>
     }
   },

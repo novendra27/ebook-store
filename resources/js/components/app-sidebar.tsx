@@ -24,7 +24,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Balance',
-        href: '/',
+        href: route('balances.index'),
         icon: Wallet,
     },
 ];
