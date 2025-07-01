@@ -42,7 +42,6 @@ class ProductController extends Controller
             'tanggal_kadaluarsa' => 'nullable|date|after_or_equal:waktu_mulai_pembayaran',
             'note' => 'nullable|string',
             'stock' => 'nullable|integer|min:0',
-            'max_jum_pembayaran' => 'nullable|integer|min:1',
             'sumber_file' => 'required|string|in:Upload Baru,Dari Library',
             'bisa_didownload' => 'required|string|in:Aktif,Tidak Aktif',
             'author' => 'nullable|string|max:255',
@@ -102,7 +101,6 @@ class ProductController extends Controller
         return redirect()->route('products.index')
             ->with('success', 'E-Book berhasil dibuat!');
 
-        // Map frontend fields to database fields
         $mappedData = [
             'seller_id' => $data['seller_id'],
             'name' => $data['name'],
@@ -139,11 +137,15 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        if ($product->seller_id !== Auth::id()) {
-            abort(403);
-        }
+        // if ($product->seller_id !== Auth::id()) {
+        //     abort(403);
+        // }
 
-        return Inertia::render('seller/products/edit', ['product' => $product]);
+        // return Inertia::render('seller/products/edit', ['product' => $product]);
+
+        return Inertia::render('seller/products/edit', [
+            'product' => $product
+        ]);
     }
 
     public function update(Request $request, Product $product)
@@ -151,6 +153,8 @@ class ProductController extends Controller
         if ($product->seller_id !== Auth::id()) {
             abort(403);
         }
+
+        Log::info('UPDATE PRODUCT REQUEST:', $request->all());
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -162,8 +166,8 @@ class ProductController extends Controller
             'file_konten' => 'nullable|file|mimes:pdf,epub,doc,docx|max:1048576',
             'waktu_mulai_pembayaran' => 'nullable|date',
             'tanggal_kadaluarsa' => 'nullable|date|after_or_equal:waktu_mulai_pembayaran',
-            'catatan' => 'nullable|string',
-            'max_jum_pembayaran' => 'nullable|integer|min:1',
+            'note' => 'nullable|string',
+            'stock' => 'nullable|integer|min:0',
             'sumber_file' => 'required|string|in:Upload Baru,Dari Library',
             'bisa_didownload' => 'required|string|in:Aktif,Tidak Aktif',
             'author' => 'nullable|string|max:255',
@@ -203,17 +207,17 @@ class ProductController extends Controller
             $data['file_content'] = $filePath;
         }
 
-        // Map data like in store method
+        // Map ke kolom yang sesuai di tabel
         $mappedData = [
             'name' => $data['name'],
             'description' => $data['description'],
-            'price' => $data['harga'],
-            'fake_price' => $data['harga_coret'] ?? null,
-            'payment_type' => $data['tipe_pembayaran'],
+            'price' => $data['price'],
+            'fake_price' => $data['fake_price'] ?? null,
+            'payment_type_id' => $data['payment_type_id'],
             'start_date' => $data['waktu_mulai_pembayaran'] ?? $product->start_date,
             'end_date' => $data['tanggal_kadaluarsa'] ?? null,
-            'note' => $data['catatan'] ?? null,
-            'stock' => $data['max_jum_pembayaran'] ?? 0,
+            'note' => $data['note'] ?? null,
+            'stock' => $data['stock'] ?? 0,
             'file_source' => $data['sumber_file'],
             'is_download' => $data['bisa_didownload'] === 'Aktif',
             'is_affiliate' => $data['affiliate'] ?? false,
@@ -225,7 +229,7 @@ class ProductController extends Controller
             'publish_date' => $data['tanggal_publish'] ?? null,
         ];
 
-        // Add file paths if uploaded
+        // Tambahkan file yang diunggah jika ada
         if (isset($data['cover'])) {
             $mappedData['cover'] = $data['cover'];
         }
@@ -233,28 +237,35 @@ class ProductController extends Controller
             $mappedData['file_content'] = $data['file_content'];
         }
 
+        // Update ke database
         $product->update($mappedData);
 
         return redirect()->route('products.index')->with('success', 'E-Book berhasil diperbarui!');
     }
 
+
     public function destroy(Product $product)
     {
-        if ($product->seller_id !== Auth::id()) {
-            abort(403);
-        }
+        // if ($product->seller_id !== Auth::id()) {
+        //     abort(403);
+        // }
 
-        if ($product->cover && Storage::disk('public')->exists($product->cover)) {
-            Storage::disk('public')->delete($product->cover);
-        }
+        // if ($product->cover && Storage::disk('public')->exists($product->cover)) {
+        //     Storage::disk('public')->delete($product->cover);
+        // }
 
-        if ($product->file_content && Storage::disk('public')->exists($product->file_content)) {
-            Storage::disk('public')->delete($product->file_content);
-        }
+        // if ($product->file_content && Storage::disk('public')->exists($product->file_content)) {
+        //     Storage::disk('public')->delete($product->file_content);
+        // }
 
+        // $product->delete();
+
+        // return redirect()->route('products.index')->with('success', 'E-Book berhasil dihapus!');
+
+        // $product = Product::findOrFail($product);
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'E-Book berhasil dihapus!');
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
     public function show(Product $product)
