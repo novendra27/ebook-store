@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('payment_type_id')->constrained('payment_types');
             $table->foreignId('product_detail_id')->nullable()->constrained('product_details');
             $table->string('name');
-            $table->bigInteger('price');
+            $table->bigInteger('price')->default(0);
             $table->bigInteger('fake_price');
             $table->text('description');
             $table->string('cover');

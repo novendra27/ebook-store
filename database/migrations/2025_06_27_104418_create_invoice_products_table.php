@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->bigInteger('amount');
-            $table->integer('quantity');
+            $table->bigInteger('amount')->default(0);
+            $table->integer('quantity')->default(1);
             $table->timestamp('created_at');
             $table->timestamp('updated_at')->nullable();
+            // $table->timestamps();
         });
     }
 

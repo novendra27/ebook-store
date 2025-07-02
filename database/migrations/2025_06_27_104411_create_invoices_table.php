@@ -14,15 +14,16 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->bigInteger('amount');
+            $table->bigInteger('amount')->default(0);
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
             $table->string('invoice_code')->unique();
-            $table->string('invoice_url');
-            $table->string('payment_method');
-            $table->string('payment_channel');
-            $table->datetime('paid_at');
+            $table->string('invoice_url')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->string('payment_channel')->nullable();
+            $table->datetime('paid_at')->nullable();
             $table->timestamp('created_at');
             $table->timestamp('updated_at')->nullable();
+            // $table->timestamps();
         });
     }
 

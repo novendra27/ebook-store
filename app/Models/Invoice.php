@@ -21,7 +21,6 @@ class Invoice extends Model
         'payment_channel',
         'paid_at',
     ];
-
     protected $casts = [
         'paid_at' => 'datetime',
         'status' => 'string',
@@ -32,7 +31,7 @@ class Invoice extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function invoiceProducts(): HasMany
+    public function items(): HasMany
     {
         return $this->hasMany(InvoiceProduct::class);
     }
