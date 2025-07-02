@@ -2,12 +2,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { MoreHorizontal } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Copy, MoreHorizontal, X } from 'lucide-react';
 import { useState } from 'react';
-import { Copy, X } from 'lucide-react';
-import EditButton from './button_edit';
 import DeleteButton from './button_delete';
+import EditButton from './button_edit';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,10 +21,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface Product {
     id: number;
-    title: string;
+    name: string;
     description: string;
     price: number;
-    image: string;
+    cover: string;
     stock: number;
     created_at: string;
     updated_at: string;
@@ -48,34 +47,31 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
         const [showMenu, setShowMenu] = useState(false);
 
         const handleEdit = () => {
-            alert('Edit produk: ' + product.title);
+            // alert('Edit produk: ' + product.name);
+            router.get(route('seller.products.edit', product.id));
         };
 
         const handleDelete = () => {
-            const confirmDelete = confirm(`Yakin hapus produk? "${product.title}"?`);
+            const confirmDelete = confirm(`Yakin hapus produk? "${product.name}"?`);
             if (confirmDelete) {
-            console.log('Produk dihapus!');    alert('Produk dihapus!');
-
+                // console.log('Produk dihapus!');
+                // alert('Produk dihapus!');
+                router.delete(route('seller.products.destroy', product.id), {
+                    preserveScroll: true, // Agar halaman tidak scroll ke atas setelah hapus
+                });
             }
         };
 
         return (
-            <Card className="overflow-hidden border-gray-700 bg-gray-800 relative">
+            <Card className="relative overflow-hidden border-gray-700 bg-gray-800">
                 <div className="relative">
-                    <img
-                        src={product.image || '/placeholder-image.jpg'}
-                        alt={product.title}
-                        className="h-48 w-full object-cover"
-                    />
-                    <button
-                        onClick={() => setShowMenu(!showMenu)}
-                        className="absolute top-2 right-2 rounded-full bg-black/50 p-1 hover:bg-black/70"
-                    >
+                    <img src={product.cover || '/placeholder-image.jpg'} alt={product.name} className="h-48 w-full object-cover" />
+                    <button onClick={() => setShowMenu(!showMenu)} className="absolute top-2 right-2 rounded-full bg-black/50 p-1 hover:bg-black/70">
                         <MoreHorizontal className="h-4 w-4 text-white" />
                     </button>
 
                     {showMenu && (
-                        <div className="absolute right-2 top-10 z-10 w-52 rounded-md border bg-white shadow-lg flex flex-col gap-2 p-2">
+                        <div className="absolute top-10 right-2 z-10 flex w-52 flex-col gap-2 rounded-md border bg-white p-2 shadow-lg">
                             <EditButton onClick={handleEdit} />
                             <DeleteButton onClick={handleDelete} />
                             <button className="flex w-full items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100">
@@ -93,7 +89,7 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
                     )}
                 </div>
                 <CardContent className="p-4">
-                    <h3 className="mb-2 text-lg font-semibold text-white">{product.title}</h3>
+                    <h3 className="mb-2 text-lg font-semibold text-white">{product.name}</h3>
                     <p className="mb-2 text-sm text-gray-400">Product Description: {product.description}</p>
                     <p className="font-semibold text-white">Harga: {formatRupiah(product.price)}</p>
                     <p className="mt-1 text-xs text-gray-400">Stock: {product.stock}</p>
@@ -114,7 +110,7 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
                         </div>
 
                         <div className="flex justify-start">
-                            <Link href={route('products.create')}>
+                            <Link href={route('seller.products.create')}>
                                 <Button className="bg-white text-black hover:bg-gray-100">Tambah Produk</Button>
                             </Link>
                         </div>

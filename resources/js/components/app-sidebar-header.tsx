@@ -1,8 +1,8 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Button } from "@/components/ui/button"
-import { Link } from '@inertiajs/react';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
+import { Link } from '@inertiajs/react';
 
 export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
     return (
@@ -12,7 +12,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
             <Button asChild>
-                <Link href={route('products.create')}>Add Product</Link>
+                <Link href={route('seller.products.create')}>Add Product</Link>
             </Button>
         </header>
     );

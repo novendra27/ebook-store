@@ -1,12 +1,12 @@
-import AppLayout from "@/layouts/app-layout";
-import { BreadcrumbItem } from "@/types";
-import { Head, useForm, Link } from "@inertiajs/react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
-import { FormEventHandler } from "react";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem } from '@/types';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
+import { FormEventHandler } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -38,7 +38,7 @@ export default function CreateWithdraw({ currentBalance }: { currentBalance: num
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('balances.store'), {
+        post(route('seller.balances.store'), {
             onSuccess: () => reset(),
         });
     };
@@ -58,20 +58,20 @@ export default function CreateWithdraw({ currentBalance }: { currentBalance: num
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Withdraw Balance" />
             <div className="flex flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="border-sidebar-border/70 dark:border-sidebar-border rounded-xl border p-4 md:p-8">
+                <div className="rounded-xl border border-sidebar-border/70 p-4 md:p-8 dark:border-sidebar-border">
                     {/* Header with Back Button */}
-                    <div className="flex items-center gap-4 mb-6">
+                    <div className="mb-6 flex items-center gap-4">
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/seller/balances">
-                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                <ArrowLeft className="mr-2 h-4 w-4" />
                                 Back to Balance
                             </Link>
                         </Button>
                     </div>
 
-                    <h1 className="text-2xl font-semibold mb-2">Withdraw Balance</h1>
+                    <h1 className="mb-2 text-2xl font-semibold">Withdraw Balance</h1>
                     <p className="mb-6 text-sm text-gray-500">Request a withdrawal from your account balance.</p>
-                    
+
                     {/* Current Balance Info */}
                     <Card className="mb-6">
                         <CardHeader>
@@ -79,9 +79,7 @@ export default function CreateWithdraw({ currentBalance }: { currentBalance: num
                             <CardDescription>Your current available balance for withdrawal</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-2xl font-bold text-green-600">
-                                {formatCurrency(currentBalance)}
-                            </p>
+                            <p className="text-2xl font-bold text-green-600">{formatCurrency(currentBalance)}</p>
                         </CardContent>
                     </Card>
 
@@ -103,17 +101,9 @@ export default function CreateWithdraw({ currentBalance }: { currentBalance: num
                                         placeholder="Enter amount in IDR"
                                         className="text-lg"
                                     />
-                                    {data.amount && (
-                                        <p className="text-sm text-gray-600">
-                                            Amount: {formatAmountDisplay(data.amount)}
-                                        </p>
-                                    )}
-                                    {errors.amount && (
-                                        <p className="text-sm text-red-600">{errors.amount}</p>
-                                    )}
-                                    <p className="text-xs text-gray-500">
-                                        Minimum withdrawal: {formatCurrency(10000)}
-                                    </p>
+                                    {data.amount && <p className="text-sm text-gray-600">Amount: {formatAmountDisplay(data.amount)}</p>}
+                                    {errors.amount && <p className="text-sm text-red-600">{errors.amount}</p>}
+                                    <p className="text-xs text-gray-500">Minimum withdrawal: {formatCurrency(10000)}</p>
                                 </div>
 
                                 <div className="space-y-2">
@@ -125,12 +115,10 @@ export default function CreateWithdraw({ currentBalance }: { currentBalance: num
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('note', e.target.value)}
                                         placeholder="Add a note for this withdrawal..."
                                     />
-                                    {errors.note && (
-                                        <p className="text-sm text-red-600">{errors.note}</p>
-                                    )}
+                                    {errors.note && <p className="text-sm text-red-600">{errors.note}</p>}
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex flex-col gap-4 sm:flex-row">
                                     <Button
                                         type="submit"
                                         disabled={processing || !data.amount || parseInt(data.amount) > currentBalance}
@@ -138,20 +126,13 @@ export default function CreateWithdraw({ currentBalance }: { currentBalance: num
                                     >
                                         {processing ? 'Processing...' : 'Submit Withdrawal'}
                                     </Button>
-                                    <Button 
-                                        type="button" 
-                                        variant="outline" 
-                                        asChild
-                                        className="w-full sm:w-auto"
-                                    >
-                                        <Link href="/seller/balances">
-                                            Cancel
-                                        </Link>
+                                    <Button type="button" variant="outline" asChild className="w-full sm:w-auto">
+                                        <Link href="/seller/balances">Cancel</Link>
                                     </Button>
                                 </div>
 
                                 {data.amount && parseInt(data.amount) > currentBalance && (
-                                    <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+                                    <div className="rounded-md border border-red-200 bg-red-50 p-4">
                                         <p className="text-sm text-red-600">
                                             Insufficient balance. Maximum withdrawal: {formatCurrency(currentBalance)}
                                         </p>

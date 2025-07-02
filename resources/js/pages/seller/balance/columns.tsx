@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
-import { Link } from "@inertiajs/react"
+import { Button } from '@/components/ui/button';
+import { Link } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
 
 export type Balance = {
     id: number;
@@ -19,16 +19,16 @@ export type Balance = {
         amount: number;
         status: string;
         created_at: string;
-    }
-}
+    };
+};
 
 export const columns: ColumnDef<Balance>[] = [
     {
         accessorKey: 'no',
         header: 'No',
         cell: ({ row }) => {
-            const index = row.index + 1
-            return <div className="font-medium">{index}</div>
+            const index = row.index + 1;
+            return <div className="font-medium">{index}</div>;
         },
     },
     {
@@ -36,8 +36,8 @@ export const columns: ColumnDef<Balance>[] = [
         header: 'Invoice Code',
         cell: ({ row }) => {
             const invoice = row.original.invoice;
-            return <div className="font-medium">{invoice?.invoice_code || 'Withdraw'}</div>
-        }
+            return <div className="font-medium">{invoice?.invoice_code || 'Withdraw'}</div>;
+        },
     },
     {
         accessorKey: 'note',
@@ -45,8 +45,8 @@ export const columns: ColumnDef<Balance>[] = [
         cell: ({ row }) => {
             const note = row.getValue('note') as string;
             const displayNote = note && note.length > 35 ? `${note.substring(0, 35)}...` : note || 'No note';
-            return <div className="font-medium">{displayNote}</div>
-        }
+            return <div className="font-medium">{displayNote}</div>;
+        },
     },
     {
         accessorKey: 'change_amount',
@@ -59,8 +59,8 @@ export const columns: ColumnDef<Balance>[] = [
             }).format(amount);
             const invoice = row.original.invoice;
             const colorClass = invoice?.invoice_code ? 'text-green-600' : 'text-red-600';
-            return <div className={`font-medium ${colorClass}`}>{formatted}</div>
-        }
+            return <div className={`font-medium ${colorClass}`}>{formatted}</div>;
+        },
     },
     {
         accessorKey: 'balance_after',
@@ -71,8 +71,8 @@ export const columns: ColumnDef<Balance>[] = [
                 style: 'currency',
                 currency: 'IDR',
             }).format(balance);
-            return <div className="font-medium">{formatted}</div>
-        }
+            return <div className="font-medium">{formatted}</div>;
+        },
     },
     {
         accessorKey: 'created_at',
@@ -82,10 +82,10 @@ export const columns: ColumnDef<Balance>[] = [
             const formatted = date.toLocaleDateString('id-ID', {
                 day: '2-digit',
                 month: '2-digit',
-                year: 'numeric'
+                year: 'numeric',
             });
-            return <div className="font-medium">{formatted}</div>
-        }
+            return <div className="font-medium">{formatted}</div>;
+        },
     },
     {
         id: 'actions',
@@ -104,11 +104,9 @@ export const columns: ColumnDef<Balance>[] = [
 
             return (
                 <Button asChild variant={'outline'}>
-                    <Link href={route('transactions.show', balance.invoice.id)}>
-                        View Details
-                    </Link>
+                    <Link href={route('seller.transactions.show', balance.invoice.id)}>View Details</Link>
                 </Button>
             );
         },
     },
-]
+];

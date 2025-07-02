@@ -98,7 +98,7 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        return redirect()->route('products.index')
+        return redirect()->route('seller.products.index')
             ->with('success', 'E-Book berhasil dibuat!');
 
         $mappedData = [
@@ -240,7 +240,7 @@ class ProductController extends Controller
         // Update ke database
         $product->update($mappedData);
 
-        return redirect()->route('products.index')->with('success', 'E-Book berhasil diperbarui!');
+        return redirect()->route('seller.products.index')->with('success', 'E-Book berhasil diperbarui!');
     }
 
 
@@ -265,7 +265,7 @@ class ProductController extends Controller
         // $product = Product::findOrFail($product);
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+        return redirect()->route('seller.products.index')->with('success', 'Produk berhasil dihapus.');
     }
 
     public function show(Product $product)

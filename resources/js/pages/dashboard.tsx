@@ -68,7 +68,7 @@ export default function Dashboard({ products }: DashboardProps) {
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                             {products.map((product) => (
                                 <Link
-                                    href={route('products.show', product.id)} // Nanti bisa diarahkan ke halaman detail produk
+                                    href={route('products.show', product.id)} // halaman detail produk
                                     key={product.id}
                                     className="group block overflow-hidden rounded-lg border transition-all hover:-translate-y-1 hover:shadow-xl"
                                 >

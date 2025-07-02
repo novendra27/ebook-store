@@ -93,7 +93,7 @@ export default function Edit({ auth, product }: EditProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('products.update', product.id), {
+        put(route('seller.products.update', product.id), {
             data,
         });
     };

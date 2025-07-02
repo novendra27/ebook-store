@@ -15,7 +15,7 @@ class BalanceController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $balances = Balance::where('seller_id', $user->seller->id)
             ->with(['invoice'])
             ->latest()
@@ -23,7 +23,7 @@ class BalanceController extends Controller
 
         // Get the current balance from the latest balance record
         $currentBalance = $balances->first()->balance_after ?? 0;
-        
+
         return Inertia::render('seller/balance/index', [
             'balances' => $balances,
             'currentBalance' => $currentBalance,
@@ -35,7 +35,7 @@ class BalanceController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         // Get the current balance from the latest balance record
         $currentBalance = $user->seller->balances()->latest()->first()->balance_after ?? 0;
 
@@ -58,7 +58,7 @@ class BalanceController extends Controller
 
         // Get current balance
         $currentBalance = $user->seller->balances()->latest()->first()->balance_after ?? 0;
-        
+
         // Check if sufficient balance
         if ($request->amount > $currentBalance) {
             return back()->withErrors(['amount' => 'Insufficient balance for withdrawal.']);
@@ -73,7 +73,7 @@ class BalanceController extends Controller
             'balance_after' => $currentBalance - $request->amount,
         ]);
 
-        return redirect()->route('balances.index')->with('success', 'Withdrawal processed successfully.');
+        return redirect()->route('seller.balances.index')->with('success', 'Withdrawal processed successfully.');
     }
 
     /**

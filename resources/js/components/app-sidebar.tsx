@@ -14,17 +14,17 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Product',
-        href: route('products.index'),
+        href: route('seller.products.index'),
         icon: Package,
     },
     {
         title: 'Transaction',
-        href: route('transactions.index'),
+        href: route('seller.transactions.index'),
         icon: CreditCard,
     },
     {
         title: 'Balance',
-        href: route('balances.index'),
+        href: route('seller.balances.index'),
         icon: Wallet,
     },
 ];

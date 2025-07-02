@@ -54,14 +54,14 @@ export default function CreateProduct({ auth }: { auth: any }) {
             return;
         }
 
-        console.log('Submitting data:', data); 
+        console.log('Submitting data:', data);
 
-        post(route('products.store'), {
+        post(route('seller.products.store'), {
             forceFormData: true,
             onSuccess: () => {
                 console.log('Success!');
                 reset();
-                window.location.href = route('products.index');
+                window.location.href = route('seller.products.index');
             },
             onError: (errors) => {
                 console.log('Errors:', errors);
