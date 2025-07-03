@@ -2,11 +2,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Copy, MoreHorizontal, X } from 'lucide-react';
+import { Head, Link } from '@inertiajs/react';
+import { MoreHorizontal, X } from 'lucide-react';
 import { useState } from 'react';
 import DeleteButton from './button_delete';
-import EditButton from './button_edit';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -16,6 +15,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Products',
         href: '/seller/product',
+    },
+    {
+        title: 'Edit Products',
+        href: '/seller/product/edit',
     },
 ];
 
@@ -47,25 +50,21 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
         const [showMenu, setShowMenu] = useState(false);
 
         const handleEdit = () => {
-            // alert('Edit produk: ' + product.name);
-            router.get(route('seller.products.edit', product.id));
+            alert('Edit produk: ' + product.title);
         };
 
         const handleDelete = () => {
-            const confirmDelete = confirm(`Yakin hapus produk? "${product.name}"?`);
+            const confirmDelete = confirm(`Yakin hapus produk? "${product.title}"?`);
             if (confirmDelete) {
-                // console.log('Produk dihapus!');
-                // alert('Produk dihapus!');
-                router.delete(route('seller.products.destroy', product.id), {
-                    preserveScroll: true, // Agar halaman tidak scroll ke atas setelah hapus
-                });
+                console.log('Produk dihapus!');
+                alert('Produk dihapus!');
             }
         };
 
         return (
             <Card className="relative overflow-hidden border-gray-700 bg-gray-800">
                 <div className="relative">
-                    <img src={product.cover || '/placeholder-image.jpg'} alt={product.name} className="h-48 w-full object-cover" />
+                    <img src={product.image || '/placeholder-image.jpg'} alt={product.title} className="h-48 w-full object-cover" />
                     <button onClick={() => setShowMenu(!showMenu)} className="absolute top-2 right-2 rounded-full bg-black/50 p-1 hover:bg-black/70">
                         <MoreHorizontal className="h-4 w-4 text-white" />
                     </button>
@@ -74,10 +73,6 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
                         <div className="absolute top-10 right-2 z-10 flex w-52 flex-col gap-2 rounded-md border bg-white p-2 shadow-lg">
                             <EditButton onClick={handleEdit} />
                             <DeleteButton onClick={handleDelete} />
-                            <button className="flex w-full items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100">
-                                <Copy size={16} />
-                                DUPLICATE PRODUCT
-                            </button>
                             <button
                                 className="flex w-full items-center justify-center px-4 py-2 text-red-500 hover:bg-red-100"
                                 onClick={() => setShowMenu(false)}

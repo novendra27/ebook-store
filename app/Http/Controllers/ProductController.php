@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductDetail;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -74,7 +76,20 @@ class ProductController extends Controller
         }
 
         $data = $validator->validated();
-        $data['seller_id'] = Auth::id();
+        // $data['seller_id'] = Auth::id();
+        // Ambil user yang sedang login
+        $user = Auth::user();
+
+        // Pastikan user memiliki relasi seller dan ambil ID seller tersebut
+        if ($user && $user->seller) {
+            $data['seller_id'] = $user->seller->id;
+        } else {
+            // Jika user tidak memiliki profil seller, kembalikan error.
+            // Ini penting untuk keamanan dan integritas data.
+            return redirect()->back()
+                ->with('error', 'Aksi tidak diizinkan. Anda bukan seorang penjual.')
+                ->withInput();
+        }
 
         // Upload cover image
         if ($request->hasFile('image')) {
@@ -125,14 +140,66 @@ class ProductController extends Controller
             'publish_date' => $data['tanggal_publish'] ?? null,
         ];
 
+        // try {
+        //     Product::create($mappedData);
+        //     Log::info('Product created successfully');
+        //     return redirect()->route('products.index')->with('success', 'E-Book berhasil dibuat!');
+        // } catch (\Exception $e) {
+        //     Log::error('Error creating product:', ['error' => $e->getMessage()]);
+        //     return redirect()->back()->with('error', 'Terjadi kesalahan saat membuat produk: ' . $e->getMessage())->withInput();
+        // }
+
         try {
-            Product::create($mappedData);
-            Log::info('Product created successfully');
-            return redirect()->route('products.index')->with('success', 'E-Book berhasil dibuat!');
+            // Gunakan transaction untuk memastikan integritas data
+            DB::transaction(function () use ($validatedData, $request) {
+                // 1. Siapkan dan simpan data untuk ProductDetail terlebih dahulu
+                $productDetail = ProductDetail::create([
+                    'author' => $validatedData['author'] ?? 'Unknown Author',
+                    'isbn' => $validatedData['isbn'] ?? 'N/A',
+                    'language' => $validatedData['bahasa'] ?? 'Indonesia',
+                    'page' => $validatedData['jumlah_halaman'] ?? 0,
+                    'publish_date' => $validatedData['tanggal_publish'] ?? now(),
+                ]);
+
+                // 2. Siapkan data untuk tabel Product
+                $productData = [
+                    'seller_id' => Auth::user()->seller->id, // Menggunakan relasi seller yang benar
+                    'payment_type_id' => $validatedData['payment_type_id'],
+                    'product_detail_id' => $productDetail->id, // Hubungkan dengan ProductDetail yang baru dibuat
+                    'name' => $validatedData['name'],
+                    'price' => $validatedData['price'],
+                    'fake_price' => $validatedData['fake_price'] ?? 0,
+                    'description' => $validatedData['description'],
+                    'start_date' => $validatedData['waktu_mulai_pembayaran'] ?? now(),
+                    'end_date' => $validatedData['tanggal_kadaluarsa'] ?? now()->addYear(),
+                    'note' => $validatedData['note'],
+                    'stock' => $validatedData['stock'] ?? 0,
+                    'is_download' => $validatedData['bisa_didownload'] === 'Aktif',
+                    'is_affiliate' => $validatedData['affiliate'],
+                ];
+
+                // Handle upload file
+                if ($request->hasFile('image')) {
+                    $path = $request->file('image')->store('products/covers', 'public');
+                    $productData['cover'] = $path;
+                }
+                if ($request->hasFile('file_konten')) {
+                    $path = $request->file('file_konten')->store('products/files', 'public');
+                    $productData['file_content'] = $path;
+                } else {
+                    // Beri nilai default jika tidak ada file, sesuai skema tabel
+                    $productData['file_content'] = 'default.pdf';
+                }
+
+                // 3. Buat Produk
+                Product::create($productData);
+            });
         } catch (\Exception $e) {
-            Log::error('Error creating product:', ['error' => $e->getMessage()]);
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuat produk: ' . $e->getMessage())->withInput();
+            Log::error('Gagal membuat produk:', ['message' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan produk.')->withInput();
         }
+        return redirect()->route('seller.products.index')->with('success', 'E-Book berhasil dibuat!');
+
     }
 
     public function edit(Product $product)
