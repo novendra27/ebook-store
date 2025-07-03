@@ -2,12 +2,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
 import { Copy, X } from 'lucide-react';
 import EditButton from './button_edit';
 import DeleteButton from './button_delete';
+import Swal from 'sweetalert2'; 
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,6 +18,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Products',
         href: '/seller/product',
+    },
+    {
+        title: 'Edit Products',
+        href: '/seller/product/edit',
     },
 ];
 
@@ -48,24 +53,33 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
         const [showMenu, setShowMenu] = useState(false);
 
         const handleEdit = () => {
-            alert('Edit produk: ' + product.title);
+            router.get(`/seller/products/${product.id}/edit`);
         };
 
         const handleDelete = () => {
-            const confirmDelete = confirm(`Yakin hapus produk? "${product.title}"?`);
-            if (confirmDelete) {
-            console.log('Produk dihapus!');    alert('Produk dihapus!');
-
-            }
+            Swal.fire({
+                title: 'Yakin ingin menghapus produk?',
+                text: `"${product.title}" akan dihapus permanen!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    router.delete(`/seller/products/${product.id}`);
+                }
+            });
         };
 
         return (
             <Card className="overflow-hidden border-gray-700 bg-gray-800 relative">
                 <div className="relative">
                     <img
-                        src={product.image || '/placeholder-image.jpg'}
-                        alt={product.title}
-                        className="h-48 w-full object-cover"
+                        src={`/storage/${product.cover}`}
+                        alt={product.name}
+                        className="aspect-square w-full object-cover"
                     />
                     <button
                         onClick={() => setShowMenu(!showMenu)}
@@ -78,10 +92,6 @@ export default function ProductsIndex({ products }: ProductsIndexProps) {
                         <div className="absolute right-2 top-10 z-10 w-52 rounded-md border bg-white shadow-lg flex flex-col gap-2 p-2">
                             <EditButton onClick={handleEdit} />
                             <DeleteButton onClick={handleDelete} />
-                            <button className="flex w-full items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100">
-                                <Copy size={16} />
-                                DUPLICATE PRODUCT
-                            </button>
                             <button
                                 className="flex w-full items-center justify-center px-4 py-2 text-red-500 hover:bg-red-100"
                                 onClick={() => setShowMenu(false)}
