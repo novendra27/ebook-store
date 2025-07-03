@@ -3,7 +3,8 @@
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\user\InvoiceController;
 use App\Http\Controllers\user\DashboardController;
-use App\Http\Controllers\user\ProductController;
+use App\Http\Controllers\user\ProductController AS UserProductController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductDetailController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\User\CartController;
@@ -24,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('productdetail/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('productdetail/{product}', [UserProductController::class, 'show'])->name('products.show');
 
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::get('/cart/list', [CartController::class, 'getCart'])->name('cart.list');
@@ -54,6 +55,8 @@ Route::middleware(['auth', EnsureSeller::class])->group(function () {
         // Products
     Route::resource('seller/products', ProductController::class)
         ->names('products');
+    // Route::put('/seller/products/{product}', [ProductController::class, 'update'])->name('products.update');
+
 });
 
 
