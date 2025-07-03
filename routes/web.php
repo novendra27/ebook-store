@@ -48,7 +48,7 @@ Route::middleware(['auth', EnsureSeller::class])->group(function () {
 
     // Products
     Route::resource('seller/products', ProductController::class)
-        ->names('products');
+        ->names('seller.products');
 });
 
 

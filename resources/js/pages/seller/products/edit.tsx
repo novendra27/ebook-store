@@ -113,7 +113,7 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('products.update', product.id), {
+        post(route('seller.products.update', product.id), {
             forceFormData: true,
         });
     };

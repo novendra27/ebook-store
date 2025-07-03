@@ -138,11 +138,11 @@ export const columns: ColumnDef<Product>[] = [
             const product = row.original
 
             const handleEdit = () => {
-                router.get(route('products.edit', product.id));
+                router.get(route('seller.products.edit', product.id));
             };
 
             const handleView = () => {
-                router.get(route('products.show', product.id));
+                router.get(route('seller.products.show', product.id));
             };
 
             const handleDelete = () => {
@@ -157,7 +157,7 @@ export const columns: ColumnDef<Product>[] = [
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        router.delete(route('products.destroy', product.id));
+                        router.delete(route('seller.products.destroy', product.id));
                     }
                 });
             };

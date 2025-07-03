@@ -14,7 +14,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Product',
-        href: route('products.index'),
+        href: route('seller.products.index'),
         icon: Package,
     },
     {

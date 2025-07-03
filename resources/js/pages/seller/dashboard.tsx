@@ -176,7 +176,7 @@ export default function SellerDashboard({
                         </div>
                         <div className="flex gap-3">
                             <Button variant="outline" asChild>
-                                <Link href={route('products.index')}>
+                                <Link href={route('seller.products.index')}>
                                     <Package className="h-4 w-4 mr-2" />
                                     Manage Products
                                 </Link>
@@ -260,7 +260,7 @@ export default function SellerDashboard({
                                     <CardDescription>Your latest added products</CardDescription>
                                 </div>
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href={route('products.index')}>
+                                    <Link href={route('seller.products.index')}>
                                         <Eye className="h-4 w-4 mr-2" />
                                         View All
                                     </Link>
@@ -290,7 +290,7 @@ export default function SellerDashboard({
                                         <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
                                         <p>No products yet</p>
                                         <Button className="mt-4" asChild>
-                                            <Link href={route('products.create')}>Add Your First Product</Link>
+                                            <Link href={route('seller.products.create')}>Add Your First Product</Link>
                                         </Button>
                                     </div>
                                 )}
@@ -420,13 +420,13 @@ export default function SellerDashboard({
                     <CardContent>
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <Button asChild className="h-20 flex-col gap-2">
-                                <Link href={route('products.create')}>
+                                <Link href={route('seller.products.create')}>
                                     <Plus className="h-6 w-6" />
                                     Add New Product
                                 </Link>
                             </Button>
                             <Button variant="outline" asChild className="h-20 flex-col gap-2">
-                                <Link href={route('products.index')}>
+                                <Link href={route('seller.products.index')}>
                                     <Package className="h-6 w-6" />
                                     Manage Products
                                 </Link>

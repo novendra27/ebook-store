@@ -100,7 +100,7 @@ export default function ProductDetail({ product }: { product: Product }) {
     };
 
     const handleEdit = () => {
-        router.get(route('products.edit', product.id));
+        router.get(route('seller.products.edit', product.id));
     };
 
     const handleDelete = () => {
@@ -115,7 +115,7 @@ export default function ProductDetail({ product }: { product: Product }) {
             cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
-                router.delete(route('products.destroy', product.id));
+                router.delete(route('seller.products.destroy', product.id));
             }
         });
     };
@@ -136,7 +136,7 @@ export default function ProductDetail({ product }: { product: Product }) {
                     {/* Header with Back Button */}
                     <div className="flex items-center gap-4 mb-6">
                         <Button variant="outline" size="sm" asChild>
-                            <Link href={route('products.index')}>
+                            <Link href={route('seller.products.index')}>
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Back to Products
                             </Link>

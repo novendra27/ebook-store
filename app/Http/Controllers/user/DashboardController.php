@@ -12,17 +12,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-
-        // Ambil 8 produk terbaru dari database
-        $products = Product::latest()->take(8)->get();
+        // Ambil 12 produk terbaru dengan relasi yang diperlukan
+        $products = Product::with(['seller.user', 'productDetail', 'paymentType'])
+            ->latest()
+            ->take(12)
+            ->get();
 
         // Kirim data ke komponen React 'dashboard'
         return Inertia::render('dashboard', [
             'products' => $products
         ]);
-
-        // $products = Product::latest()->get();
-        // return Inertia::render('dashboard', ['products' => $products]);
     }
 
 }

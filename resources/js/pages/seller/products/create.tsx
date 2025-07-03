@@ -83,7 +83,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         
-        post(route('products.store'), {
+        post(route('seller.products.store'), {
             forceFormData: true,
             onSuccess: () => {
                 reset();

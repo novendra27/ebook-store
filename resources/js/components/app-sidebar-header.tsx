@@ -12,7 +12,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
             <Button asChild>
-                <Link href={route('products.create')}>Add Product</Link>
+                <Link href={route('seller.products.create')}>Add Product</Link>
             </Button>
         </header>
     );
