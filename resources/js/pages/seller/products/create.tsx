@@ -1,453 +1,623 @@
-import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
-import { useState } from 'react';
-// import route from 'ziggy-js';
-import { route } from 'ziggy-js';
+import AppLayout from "@/layouts/app-layout";
+import { BreadcrumbItem } from "@/types";
+import { Head, useForm, Link } from "@inertiajs/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft, Upload, Eye, Save, X } from "lucide-react";
+import { FormEventHandler, useState } from "react";
 
-export default function CreateProduct({ auth }: { auth: any }) {
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Seller Dashboard',
+        href: '/seller',
+    },
+    {
+        title: 'Products',
+        href: '/seller/products',
+    },
+    {
+        title: 'Create Product',
+        href: '/seller/products/create',
+    },
+];
+
+interface PaymentType {
+    id: number;
+    name: string;
+}
+
+export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentType[] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
-        payment_type_id: '',
+        description: '',
         price: '',
         fake_price: '',
-        description: '',
-        cover: null,
+        payment_type_id: '',
+        cover: null as File | null,
+        cover_path: '',
         start_date: '',
         end_date: '',
+        file_content: null as File | null,
+        file_path: '',
+        stock: '0',
         note: '',
-        stock: '',
-        file_content: null,
         is_download: false as boolean,
-        is_affiliate: false,
-
-        tipe_pembayaran: 'Produk Berbayar',
-        harga: '',
-        harga_coret: '',
-        waktu_mulai_pembayaran: '',
-        tanggal_kadaluarsa: '',
-        catatan: '',
-        max_jum_pembayaran: '',
-        sumber_file: 'Upload Baru',
-        bisa_didownload: 'Aktif',
+        is_affiliate: false as boolean,
+        // Product Detail Fields
         author: '',
         isbn: '',
-        format: '',
-        bahasa: '',
-        jumlah_halaman: '',
-        tanggal_publish: '',
-        affiliate: false,
-        image: null,
-        file_konten: null,
+        language: '',
+        page: '',
+        publish_date: '',
     });
 
-    const [dragActive, setDragActive] = useState({
-        cover: false,
-        file: false,
-    });
+    const [coverPreview, setCoverPreview] = useState<string>('');
+    const [filePreview, setFilePreview] = useState<string>('');
+    const [step, setStep] = useState(1);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Validasi sederhana sebelum submit
-        if (!data.name || !data.description) {
-            alert('Nama produk dan deskripsi harus diisi!');
-            return;
+    const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setCoverPreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+            setData('cover', file);
         }
+    };
 
-        console.log('Submitting data:', data); 
+    const handleFileContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setFilePreview(file.name);
+            setData('file_content', file);
+        }
+    };
 
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        
         post(route('products.store'), {
             forceFormData: true,
             onSuccess: () => {
-                console.log('Success!');
                 reset();
-                window.location.href = route('products.index');
-            },
-            onError: (errors) => {
-                console.log('Errors:', errors);
-            },
-            onFinish: () => {
-                console.log('Request finished');
+                setCoverPreview('');
+                setFilePreview('');
+                setStep(1);
             },
         });
     };
 
-    const handleDrag = (e: React.DragEvent, type: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === 'dragenter' || e.type === 'dragover') {
-            setDragActive((prev) => ({ ...prev, [type]: true }));
-        } else if (e.type === 'dragleave') {
-            setDragActive((prev) => ({ ...prev, [type]: false }));
+    const nextStep = () => {
+        if (step < 4) setStep(step + 1);
+    };
+
+    const prevStep = () => {
+        if (step > 1) setStep(step - 1);
+    };
+
+    const getStepTitle = () => {
+        switch (step) {
+            case 1: return 'Basic Information';
+            case 2: return 'Book Details';
+            case 3: return 'Files & Media';
+            case 4: return 'Configuration';
+            default: return 'Product Information';
         }
     };
 
-    const handleDrop = (e: React.DragEvent, type: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive((prev) => ({ ...prev, [type]: false }));
-
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            const file = e.dataTransfer.files[0];
-            if (type === 'cover') {
-                setData('image', file);
-            } else if (type === 'file') {
-                setData('file_konten', file);
-            }
-        }
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (type === 'cover') {
-                setData('image', file);
-            } else if (type === 'file') {
-                setData('file_konten', file);
-            }
+    const getStepDescription = () => {
+        switch (step) {
+            case 1: return 'Enter basic product details';
+            case 2: return 'Enter book-specific information';
+            case 3: return 'Upload cover image and e-book file';
+            case 4: return 'Configure settings and options';
+            default: return 'Complete the product setup';
         }
     };
 
     return (
-        <AuthenticatedLayout user={auth.user} header={<h2 className="text-xl leading-tight font-semibold text-gray-800">Buat E-Book</h2>}>
-            <Head title="Buat E-Book" />
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Create Product" />
+            <div className="flex flex-1 flex-col gap-4 rounded-xl p-4">
+                <div className="border-sidebar-border/70 dark:border-sidebar-border rounded-xl border p-4 md:p-8">
+                    {/* Header with Back Button */}
+                    <div className="flex items-center gap-4 mb-6">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href="/seller/products">
+                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                Back to Products
+                            </Link>
+                        </Button>
+                    </div>
 
-            <div className="py-12">
-                <div className="mx-auto max-w-4xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="border-b border-gray-200 bg-white p-6">
-                            <div className="mb-6 flex items-center justify-between">
-                                <h1 className="text-2xl font-semibold text-gray-800">Buat E-Book</h1>
-                                <button className="text-gray-400 hover:text-gray-600" onClick={() => window.history.back()}>
-                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h1 className="text-2xl font-semibold">Create New Product</h1>
+                            <p className="text-sm text-gray-500">Add a new e-book product to your store.</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2">
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div key={i} className="flex items-center">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                                            i === step ? 'bg-blue-600 text-white' : 
+                                            i < step ? 'bg-green-600 text-white' : 
+                                            'bg-gray-200 text-gray-600'
+                                        }`}>
+                                            {i}
+                                        </div>
+                                        {i < 4 && (
+                                            <div className={`w-8 h-0.5 mx-2 ${
+                                                i < step ? 'bg-green-600' : 'bg-gray-200'
+                                            }`} />
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-
-                            <p className="mb-8 text-gray-600">Penjualan e-book semakin mudah dengan otomasi download dan halaman produk keren</p>
-
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Nama Produk */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Nama Produk*</label>
-                                    <input
-                                        type="text"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                        placeholder="Wajib diisi"
-                                        required
-                                    />
-                                    {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
-                                </div>
-
-                                {/* Tipe Pembayaran */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Tipe Pembayaran</label>
-                                    <select
-                                        value={data.payment_type_id}
-                                        onChange={(e) => setData('payment_type_id', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    >
-                                        <option value="1">Gratis</option>
-                                        <option value="2">Berbayar</option>
-                                    </select>
-                                    {errors.payment_type_id && <p className="mt-1 text-sm text-red-600">{errors.payment_type_id}</p>}
-                                </div>
-
-                                {/* Harga */}
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">Harga*</label>
-                                        <div className="relative">
-                                            <span className="absolute top-2 left-3 text-gray-500">Rp</span>
-                                            <input
-                                                type="number"
-                                                value={data.price}
-                                                onChange={(e) => setData('price', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 py-2 pr-3 pl-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                                placeholder="Wajib diisi"
-                                                required
-                                            />
-                                        </div>
-                                        <p className="mt-1 text-xs text-gray-500">Penagihan ini menggunakan mata uang IDR (Rupiah)</p>
-                                        {errors.harga && <p className="mt-1 text-sm text-red-600">{errors.harga}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="mb-2 block text-sm font-medium text-gray-700">Harga Coret (opsional)</label>
-                                        <div className="relative">
-                                            <span className="absolute top-2 left-3 text-gray-500">Rp</span>
-                                            <input
-                                                type="number"
-                                                value={data.fake_price}
-                                                onChange={(e) => setData('fake_price', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 py-2 pr-3 pl-10 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
-                                        </div>
-                                        <p className="mt-1 text-xs text-gray-500">Harga coret harus lebih besar dari harga utama.</p>
-                                    </div>
-                                </div>
-
-                                {/* Deskripsi */}
-                                <div className="mb-4">
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Deskripsi*</label>
-                                    <textarea
-                                        value={data.description}
-                                        onChange={(e) => setData('description', e.target.value)}
-                                        rows={4}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                        required
-                                    />
-                                    {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
-                                </div>
-
-                                {/* Cover */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Cover (gambar untuk promo)</label>
-                                    <div
-                                        className={`rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-                                            dragActive.cover ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-                                        }`}
-                                        onDragEnter={(e) => handleDrag(e, 'cover')}
-                                        onDragLeave={(e) => handleDrag(e, 'cover')}
-                                        onDragOver={(e) => handleDrag(e, 'cover')}
-                                        onDrop={(e) => handleDrop(e, 'cover')}
-                                    >
-                                        <input
-                                            type="file"
-                                            id="cover-upload"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={(e) => handleFileChange(e, 'cover')}
-                                        />
-                                        <label htmlFor="cover-upload" className="cursor-pointer">
-                                            <div className="mb-2 text-lg font-medium text-blue-500">Drag & drop image</div>
-                                            <p className="text-gray-500">atau klik untuk browse</p>
-                                        </label>
-                                        {data.image && <p className="mt-2 text-sm text-green-600">File dipilih: {data.image.name}</p>}
-                                    </div>
-                                </div>
-
-                                {/* Waktu Mulai Penjualan */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Waktu Mulai Penjualan</label>
-                                    <input
-                                        type="date"
-                                        value={data.waktu_mulai_pembayaran}
-                                        onChange={(e) => setData('waktu_mulai_pembayaran', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Kami akan membuka link pembayaran pada tanggal dan waktu yang anda pilih. Opsional, kosongkan untuk langsung
-                                        membuka penjualan
-                                    </p>
-                                </div>
-
-                                {/* Tanggal Kadaluarsa */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Tanggal Kadaluarsa</label>
-                                    <input
-                                        type="date"
-                                        value={data.tanggal_kadaluarsa}
-                                        onChange={(e) => setData('tanggal_kadaluarsa', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">Kami akan menutup link pembayaran pada tanggal ini (opsional)</p>
-                                </div>
-
-                                {/* Catatan */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Catatan</label>
-                                    <textarea
-                                        value={data.note}
-                                        onChange={(e) => setData('note', e.target.value)}
-                                        rows={4}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Catatan akan dilihat oleh pendaftar/pembeli setelah melakukan pendaftaran/membayar (opsional).
-                                    </p>
-                                </div>
-
-                                {/* Maksimum Jumlah Pembayaran */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Maksimum Jumlah Pembayaran (Kuota / QTY)</label>
-                                    <input
-                                        type="number"
-                                        value={data.stock}
-                                        onChange={(e) => setData('stock', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Kami akan menutup link pembayaran setelah melewati batas jumlah maksimal. Kosongkan untuk tanpa limit jumlah
-                                        (unlimited)
-                                    </p>
-                                </div>
-
-                                {/* Sumber File */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Sumber File*</label>
-                                    <select
-                                        value={data.sumber_file}
-                                        onChange={(e) => setData('sumber_file', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    >
-                                        <option value="Upload Baru">Upload Baru</option>
-                                        <option value="Dari Library">Dari Library</option>
-                                    </select>
-                                </div>
-
-                                {/* File Konten */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">File / Konten*</label>
-                                    <div
-                                        className={`rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
-                                            dragActive.file ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-                                        }`}
-                                        onDragEnter={(e) => handleDrag(e, 'file')}
-                                        onDragLeave={(e) => handleDrag(e, 'file')}
-                                        onDragOver={(e) => handleDrag(e, 'file')}
-                                        onDrop={(e) => handleDrop(e, 'file')}
-                                    >
-                                        <input
-                                            type="file"
-                                            id="file-upload"
-                                            className="hidden"
-                                            accept=".epub,.pdf"
-                                            onChange={(e) => handleFileChange(e, 'file')}
-                                        />
-                                        <label htmlFor="file-upload" className="cursor-pointer">
-                                            <div className="mb-2 text-lg font-medium text-blue-500">Drag Files or Click to Browse</div>
-                                            <p className="text-sm text-gray-500">
-                                                File harus diisi
-                                                <br />
-                                                Ukuran file maksimal 1GB. Harap masukkan file dengan format epub.
-                                            </p>
-                                        </label>
-                                        {data.file_konten && <p className="mt-2 text-sm text-green-600">File dipilih: {data.file_konten.name}</p>}
-                                    </div>
-                                </div>
-
-                                {/* Bisa didownload */}
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Bisa didownload ?</label>
-                                    <select
-                                        value={data.bisa_didownload}
-                                        onChange={(e) => setData('bisa_didownload', e.target.value)}
-                                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    >
-                                        <option value="Aktif">Aktif</option>
-                                        <option value="Tidak Aktif">Tidak Aktif</option>
-                                    </select>
-                                </div>
-
-                                {/* Detail Tambahan */}
-                                <div className="rounded-lg bg-gray-50 p-4">
-                                    <h3 className="mb-4 text-lg font-medium text-gray-800">Detail Tambahan (opsional)</h3>
-
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                        {/* Author */}
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">Author</label>
-                                            <input
-                                                type="text"
-                                                value={data.author}
-                                                onChange={(e) => setData('author', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
-                                        </div>
-
-                                        {/* ISBN */}
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">ISBN</label>
-                                            <input
-                                                type="text"
-                                                value={data.isbn}
-                                                onChange={(e) => setData('isbn', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
-                                        </div>
-
-                                        {/* Format */}
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">Format</label>
-                                            <select
-                                                value={data.format}
-                                                onChange={(e) => setData('format', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            >
-                                                <option value="">-- Pilih Opsi --</option>
-                                                <option value="PDF">PDF</option>
-                                                <option value="EPUB">EPUB</option>
-                                                <option value="MOBI">MOBI</option>
-                                            </select>
-                                        </div>
-
-                                        {/* Bahasa */}
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">Bahasa</label>
-                                            <input
-                                                type="text"
-                                                value={data.bahasa}
-                                                onChange={(e) => setData('bahasa', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
-                                        </div>
-
-                                        {/* Jumlah Halaman */}
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">Jumlah Halaman</label>
-                                            <input
-                                                type="number"
-                                                value={data.jumlah_halaman}
-                                                onChange={(e) => setData('jumlah_halaman', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
-                                        </div>
-
-                                        {/* Tanggal Publish */}
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">Tanggal Publish</label>
-                                            <input
-                                                type="date"
-                                                value={data.tanggal_publish}
-                                                onChange={(e) => setData('tanggal_publish', e.target.value)}
-                                                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Produk bisa diaffiliate */}
-                                    <div className="mt-4">
-                                        <label className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={data.affiliate}
-                                                onChange={(e) => setData('affiliate', e.target.checked)}
-                                                className="focus:ring-opacity-50 rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200"
-                                            />
-                                            <span className="ml-2 text-sm text-gray-700">Produk bisa diaffiliate</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {/* Submit Button */}
-                                <div className="pt-6">
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="w-full rounded-md bg-blue-600 px-4 py-3 text-lg font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                        {processing ? 'MENYIMPAN...' : 'BUAT E-BOOK'}
-                                    </button>
-                                </div>
-                            </form>
                         </div>
                     </div>
+
+                    {/* Product Form */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{getStepTitle()}</CardTitle>
+                            <CardDescription>{getStepDescription()}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form onSubmit={submit} className="space-y-6">
+                                {step === 1 && (
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="name">Product Name *</Label>
+                                            <Input
+                                                id="name"
+                                                type="text"
+                                                value={data.name}
+                                                onChange={(e) => setData('name', e.target.value)}
+                                                placeholder="Enter product name"
+                                                className="text-base"
+                                                required
+                                            />
+                                            {errors.name && (
+                                                <p className="text-sm text-red-600">{errors.name}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="description">Description *</Label>
+                                            <Textarea
+                                                id="description"
+                                                value={data.description}
+                                                onChange={(e) => setData('description', e.target.value)}
+                                                placeholder="Enter detailed product description"
+                                                rows={4}
+                                                className="text-base"
+                                                required
+                                            />
+                                            {errors.description && (
+                                                <p className="text-sm text-red-600">{errors.description}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="price">Price (IDR) *</Label>
+                                                <Input
+                                                    id="price"
+                                                    type="number"
+                                                    value={data.price}
+                                                    onChange={(e) => setData('price', e.target.value)}
+                                                    placeholder="Enter price"
+                                                    min="0"
+                                                    step="1000"
+                                                    className="text-base"
+                                                    required
+                                                />
+                                                {errors.price && (
+                                                    <p className="text-sm text-red-600">{errors.price}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="fake_price">Strike-through Price (IDR) *</Label>
+                                                <Input
+                                                    id="fake_price"
+                                                    type="number"
+                                                    value={data.fake_price}
+                                                    onChange={(e) => setData('fake_price', e.target.value)}
+                                                    placeholder="Enter original price"
+                                                    min="0"
+                                                    step="1000"
+                                                    className="text-base"
+                                                    required
+                                                />
+                                                {errors.fake_price && (
+                                                    <p className="text-sm text-red-600">{errors.fake_price}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="payment_type_id">Payment Type *</Label>
+                                                <Select value={data.payment_type_id} onValueChange={(value) => setData('payment_type_id', value)}>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select payment type" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {paymentTypes.map((type) => (
+                                                            <SelectItem key={type.id} value={type.id.toString()}>
+                                                                {type.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                {errors.payment_type_id && (
+                                                    <p className="text-sm text-red-600">{errors.payment_type_id}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="stock">Stock Quantity</Label>
+                                                <Input
+                                                    id="stock"
+                                                    type="number"
+                                                    value={data.stock}
+                                                    onChange={(e) => setData('stock', e.target.value)}
+                                                    placeholder="Enter stock quantity"
+                                                    min="0"
+                                                    className="text-base"
+                                                />
+                                                {errors.stock && (
+                                                    <p className="text-sm text-red-600">{errors.stock}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end">
+                                            <Button type="button" onClick={nextStep}>
+                                                Next Step
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {step === 2 && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="author">Author</Label>
+                                                <Input
+                                                    id="author"
+                                                    type="text"
+                                                    value={data.author}
+                                                    onChange={(e) => setData('author', e.target.value)}
+                                                    placeholder="Enter author name"
+                                                    className="text-base"
+                                                />
+                                                {errors.author && (
+                                                    <p className="text-sm text-red-600">{errors.author}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="isbn">ISBN</Label>
+                                                <Input
+                                                    id="isbn"
+                                                    type="text"
+                                                    value={data.isbn}
+                                                    onChange={(e) => setData('isbn', e.target.value)}
+                                                    placeholder="Enter ISBN number"
+                                                    className="text-base"
+                                                />
+                                                {errors.isbn && (
+                                                    <p className="text-sm text-red-600">{errors.isbn}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="language">Language</Label>
+                                                <Input
+                                                    id="language"
+                                                    type="text"
+                                                    value={data.language}
+                                                    onChange={(e) => setData('language', e.target.value)}
+                                                    placeholder="Enter language (e.g., Indonesian, English)"
+                                                    className="text-base"
+                                                />
+                                                {errors.language && (
+                                                    <p className="text-sm text-red-600">{errors.language}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="page">Number of Pages</Label>
+                                                <Input
+                                                    id="page"
+                                                    type="number"
+                                                    value={data.page}
+                                                    onChange={(e) => setData('page', e.target.value)}
+                                                    placeholder="Enter number of pages"
+                                                    min="1"
+                                                    className="text-base"
+                                                />
+                                                {errors.page && (
+                                                    <p className="text-sm text-red-600">{errors.page}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="publish_date">Publish Date</Label>
+                                            <Input
+                                                id="publish_date"
+                                                type="date"
+                                                value={data.publish_date}
+                                                onChange={(e) => setData('publish_date', e.target.value)}
+                                                className="text-base"
+                                            />
+                                            {errors.publish_date && (
+                                                <p className="text-sm text-red-600">{errors.publish_date}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <Button type="button" variant="outline" onClick={prevStep}>
+                                                Previous
+                                            </Button>
+                                            <Button type="button" onClick={nextStep}>
+                                                Next Step
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {step === 3 && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            {/* Cover Image Upload */}
+                                            <div className="space-y-4">
+                                                <Label>Cover Image *</Label>
+                                                <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                                                    {coverPreview ? (
+                                                        <div className="space-y-3">
+                                                            <img
+                                                                src={coverPreview}
+                                                                alt="Cover preview"
+                                                                className="w-32 h-40 object-cover mx-auto rounded-lg border"
+                                                            />
+                                                            <div className="flex justify-center gap-2">
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => {
+                                                                        setCoverPreview('');
+                                                                        setData('cover', null);
+                                                                    }}
+                                                                >
+                                                                    <X className="h-4 w-4 mr-1" />
+                                                                    Remove
+                                                                </Button>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => window.open(coverPreview, '_blank')}
+                                                                >
+                                                                    <Eye className="h-4 w-4 mr-1" />
+                                                                    Preview
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-3">
+                                                            <Upload className="h-12 w-12 text-gray-400 mx-auto" />
+                                                            <div>
+                                                                <p className="text-sm text-gray-600">
+                                                                    Click to upload cover image
+                                                                </p>
+                                                                <p className="text-xs text-gray-500 mt-1">
+                                                                    PNG, JPG, JPEG up to 10MB
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleCoverChange}
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="cover_path">Or enter cover path</Label>
+                                                    <Input
+                                                        id="cover_path"
+                                                        type="text"
+                                                        value={data.cover_path}
+                                                        onChange={(e) => setData('cover_path', e.target.value)}
+                                                        placeholder="e.g., covers/my-book-cover.jpg"
+                                                        className="text-base"
+                                                    />
+                                                </div>
+                                                {errors.cover && (
+                                                    <p className="text-sm text-red-600">{errors.cover}</p>
+                                                )}
+                                            </div>
+
+                                            {/* E-book File Upload */}
+                                            <div className="space-y-4">
+                                                <Label>E-book File *</Label>
+                                                <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                                                    <div className="space-y-3">
+                                                        <Upload className="h-12 w-12 text-gray-400 mx-auto" />
+                                                        <div>
+                                                            <p className="text-sm text-gray-600">
+                                                                Click to upload e-book file
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                PDF, EPUB, MOBI up to 50MB
+                                                            </p>
+                                                        </div>
+                                                        {data.file_content && (
+                                                            <div className="text-sm text-green-600 font-medium">
+                                                                📄 {filePreview || 'No file selected'}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf,.epub,.mobi"
+                                                        onChange={handleFileContentChange}
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="file_content_path">Or enter file path</Label>
+                                                    <Input
+                                                        id="file_content_path"
+                                                        type="text"
+                                                        value={data.file_path}
+                                                        onChange={(e) => setData('file_path', e.target.value)}
+                                                        placeholder="e.g., ebooks/my-book.pdf"
+                                                        className="text-base"
+                                                    />
+                                                </div>
+                                                {errors.file_content && (
+                                                    <p className="text-sm text-red-600">{errors.file_content}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <Button type="button" variant="outline" onClick={prevStep}>
+                                                Previous
+                                            </Button>
+                                            <Button type="button" onClick={nextStep}>
+                                                Next Step
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {step === 4 && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="start_date">Sale Start Date *</Label>
+                                                <Input
+                                                    id="start_date"
+                                                    type="datetime-local"
+                                                    value={data.start_date}
+                                                    onChange={(e) => setData('start_date', e.target.value)}
+                                                    className="text-base"
+                                                    required
+                                                />
+                                                {errors.start_date && (
+                                                    <p className="text-sm text-red-600">{errors.start_date}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="end_date">Sale End Date *</Label>
+                                                <Input
+                                                    id="end_date"
+                                                    type="datetime-local"
+                                                    value={data.end_date}
+                                                    onChange={(e) => setData('end_date', e.target.value)}
+                                                    className="text-base"
+                                                    required
+                                                />
+                                                {errors.end_date && (
+                                                    <p className="text-sm text-red-600">{errors.end_date}</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="note">Additional Notes</Label>
+                                            <Textarea
+                                                id="note"
+                                                value={data.note}
+                                                onChange={(e) => setData('note', e.target.value)}
+                                                placeholder="Enter any additional notes or special instructions"
+                                                rows={3}
+                                                className="text-base"
+                                            />
+                                            {errors.note && (
+                                                <p className="text-sm text-red-600">{errors.note}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <Label>Product Settings</Label>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                                                    <Checkbox
+                                                        id="is_download"
+                                                        checked={data.is_download}
+                                                        onCheckedChange={(checked) => setData('is_download', checked as boolean)}
+                                                    />
+                                                    <div>
+                                                        <Label htmlFor="is_download" className="font-medium">Allow Download</Label>
+                                                        <p className="text-sm text-gray-500">Allow customers to download the e-book</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                                                    <Checkbox
+                                                        id="is_affiliate"
+                                                        checked={data.is_affiliate}
+                                                        onCheckedChange={(checked) => setData('is_affiliate', checked as boolean)}
+                                                    />
+                                                    <div>
+                                                        <Label htmlFor="is_affiliate" className="font-medium">Enable Affiliate</Label>
+                                                        <p className="text-sm text-gray-500">Allow affiliate marketing for this product</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-between">
+                                            <Button type="button" variant="outline" onClick={prevStep}>
+                                                Previous
+                                            </Button>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    asChild
+                                                >
+                                                    <Link href="/seller/products">
+                                                        Cancel
+                                                    </Link>
+                                                </Button>
+                                                <Button
+                                                    type="submit"
+                                                    disabled={processing}
+                                                >
+                                                    <Save className="h-4 w-4 mr-2" />
+                                                    {processing ? 'Creating...' : 'Create Product'}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </form>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AppLayout>
     );
 }

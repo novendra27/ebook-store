@@ -63,8 +63,14 @@ const formatDateForInput = (dateStr: string) => {
 };
 
 export default function EditProduct({ product, paymentTypes }: { product: Product, paymentTypes: PaymentType[] }) {
+    // Debug: Log product data untuk melihat struktur data yang diterima
+    console.log('Product data:', product);
+    console.log('Product detail:', product.product_detail);
+    
     const [coverPreview, setCoverPreview] = useState<string>('');
     const [filePreview, setFilePreview] = useState<string>('');
+    const [coverFile, setCoverFile] = useState<File | null>(null);
+    const [contentFile, setContentFile] = useState<File | null>(null);
     
     const { data, setData, post, processing, errors } = useForm({
         name: product.name || '',
@@ -99,6 +105,7 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                 setCoverPreview(e.target?.result as string);
             };
             reader.readAsDataURL(file);
+            setCoverFile(file);
             setData('cover', file);
         }
     };
@@ -107,6 +114,7 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
         const file = e.target.files?.[0];
         if (file) {
             setFilePreview(file.name);
+            setContentFile(file);
             setData('file_content', file);
         }
     };
@@ -324,11 +332,10 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                     </div>
                                 </div>
 
-                                {/* File Upload Section */}
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Cover Image Upload */}
                                     <div className="space-y-4">
-                                        <Label>Cover Image</Label>
+                                        <Label>Cover Image *</Label>
                                         <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                                             {coverPreview ? (
                                                 <div className="space-y-3">
@@ -344,7 +351,7 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                                             size="sm"
                                                             onClick={() => {
                                                                 setCoverPreview('');
-                                                                setData('cover', null);
+                                                                setData('cover', product.cover);
                                                             }}
                                                         >
                                                             <X className="h-4 w-4 mr-1" />
@@ -361,12 +368,12 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                                         </Button>
                                                     </div>
                                                 </div>
-                                            ) : data.cover_path ? (
+                                            ) : data.cover ? (
                                                 <div className="space-y-3">
                                                     <div className="w-32 h-40 bg-gray-200 mx-auto rounded-lg border flex items-center justify-center">
                                                         <span className="text-gray-500 text-sm">Current Cover</span>
                                                     </div>
-                                                    <p className="text-sm text-gray-600">{data.cover_path}</p>
+                                                    <p className="text-sm text-gray-600">{data.cover}</p>
                                                     <Button
                                                         type="button"
                                                         variant="outline"
@@ -384,7 +391,7 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                                                         setCoverPreview(e.target?.result as string);
                                                                     };
                                                                     reader.readAsDataURL(file);
-                                                                    setData('cover', file);
+                                                                    setData('cover', file.name);
                                                                 }
                                                             };
                                                             input.click();
@@ -419,22 +426,19 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                             <Input
                                                 id="cover_path"
                                                 type="text"
-                                                value={data.cover_path}
-                                                onChange={(e) => setData('cover_path', e.target.value)}
+                                                value={data.cover}
+                                                onChange={(e) => setData('cover', e.target.value)}
                                                 placeholder="e.g., covers/my-book-cover.jpg"
                                             />
                                         </div>
                                         {errors.cover && (
                                             <p className="text-sm text-red-600">{errors.cover}</p>
                                         )}
-                                        {errors.cover_path && (
-                                            <p className="text-sm text-red-600">{errors.cover_path}</p>
-                                        )}
                                     </div>
 
                                     {/* E-book File Upload */}
                                     <div className="space-y-4">
-                                        <Label>E-book File</Label>
+                                        <Label>E-book File *</Label>
                                         <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                                             {filePreview ? (
                                                 <div className="space-y-3">
@@ -448,17 +452,17 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                                         size="sm"
                                                         onClick={() => {
                                                             setFilePreview('');
-                                                            setData('file_content', null);
+                                                            setData('file_content', product.file_content);
                                                         }}
                                                     >
                                                         <X className="h-4 w-4 mr-1" />
                                                         Remove
                                                     </Button>
                                                 </div>
-                                            ) : data.file_path ? (
+                                            ) : data.file_content ? (
                                                 <div className="space-y-3">
                                                     <div className="text-6xl">📄</div>
-                                                    <p className="text-sm text-gray-600">{data.file_path}</p>
+                                                    <p className="text-sm text-gray-600">{data.file_content}</p>
                                                     <Button
                                                         type="button"
                                                         variant="outline"
@@ -472,7 +476,7 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                                                 const file = target.files?.[0];
                                                                 if (file) {
                                                                     setFilePreview(file.name);
-                                                                    setData('file_content', file);
+                                                                    setData('file_content', file.name);
                                                                 }
                                                             };
                                                             input.click();
@@ -503,20 +507,17 @@ export default function EditProduct({ product, paymentTypes }: { product: Produc
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="file_path">Or enter file path</Label>
+                                            <Label htmlFor="file_content_path">Or enter file path</Label>
                                             <Input
-                                                id="file_path"
+                                                id="file_content_path"
                                                 type="text"
-                                                value={data.file_path}
-                                                onChange={(e) => setData('file_path', e.target.value)}
+                                                value={data.file_content}
+                                                onChange={(e) => setData('file_content', e.target.value)}
                                                 placeholder="e.g., ebooks/my-book.pdf"
                                             />
                                         </div>
                                         {errors.file_content && (
                                             <p className="text-sm text-red-600">{errors.file_content}</p>
-                                        )}
-                                        {errors.file_path && (
-                                            <p className="text-sm text-red-600">{errors.file_path}</p>
                                         )}
                                     </div>
                                 </div>

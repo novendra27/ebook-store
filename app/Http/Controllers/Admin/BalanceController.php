@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Balance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,10 @@ class BalanceController extends Controller
     {
         $user = Auth::user();
         
+        if (!$user || !$user->seller) {
+            abort(403, 'You must be a seller to access this page.');
+        }
+        
         $balances = Balance::where('seller_id', $user->seller->id)
             ->with(['invoice'])
             ->latest()
@@ -29,12 +34,17 @@ class BalanceController extends Controller
             'currentBalance' => $currentBalance,
         ]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         $user = Auth::user();
+        
+        if (!$user || !$user->seller) {
+            abort(403, 'You must be a seller to access this page.');
+        }
         
         // Get the current balance from the latest balance record
         $currentBalance = $user->seller->balances()->latest()->first()->balance_after ?? 0;
@@ -50,6 +60,10 @@ class BalanceController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+        
+        if (!$user || !$user->seller) {
+            abort(403, 'You must be a seller to access this page.');
+        }
 
         $request->validate([
             'amount' => 'required|numeric|min:10000', // Minimum withdraw 10,000
@@ -69,7 +83,7 @@ class BalanceController extends Controller
             'seller_id' => $user->seller->id,
             'invoice_id' => null, // No invoice for withdraw
             'note' => $request->note ?? 'Withdrawal',
-            'change_amount' => $request->amount, // Negative for withdrawal
+            'change_amount' => -$request->amount, // Negative for withdrawal
             'balance_after' => $currentBalance - $request->amount,
         ]);
 
