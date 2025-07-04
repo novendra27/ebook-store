@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureSeller;
 use App\Models\ProductDetail;
 use Inertia\Inertia;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+
 
 Route::get('/', function () {
 
@@ -59,6 +61,8 @@ Route::middleware(['auth', EnsureSeller::class])->group(function () {
 
 });
 
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

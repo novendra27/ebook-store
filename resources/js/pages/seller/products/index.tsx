@@ -19,10 +19,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Products',
         href: '/seller/product',
     },
-    {
-        title: 'Edit Products',
-        href: '/seller/product/edit',
-    },
+    // {
+    //     title: 'Edit Products',
+    //     href: '/seller/product/edit',
+    // },
 ];
 
 interface Product {

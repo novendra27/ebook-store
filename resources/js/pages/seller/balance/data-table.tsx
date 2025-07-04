@@ -8,6 +8,10 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
 }
 
+export const userbalance = {
+  accountBalance: 200000,
+};
+
 export function DataTable<TData, TValue>({
     columns,
     data,
