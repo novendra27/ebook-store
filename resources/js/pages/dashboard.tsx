@@ -90,6 +90,39 @@ export default function Dashboard({ products }: DashboardProps) {
                             ))}
                         </div>
 
+                        <div className="card h-100">
+                            <div className="card-body">
+                                <div className="saldo_wrapper space-y-4">
+                                    <div className="rounded border bg-white p-4 shadow-sm">
+                                        <div className="mb-2 flex items-center justify-between">
+                                            <h3 className="text-lg font-semibold text-gray-800">Account Balance</h3>
+                                            <button className="clickable bg-transparent" type="button" style={{ border: 'none' }}>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="16"
+                                                    height="16"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.5"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    className="rui-icon text-muted"
+                                                >
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                    <circle cx="12" cy="12" r="3"></circle>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <div className="mt-2 flex items-center">
+                                            <h3 className="mr-2 mb-0 text-xl font-bold text-primary"> {formatRupiah(userbalance.accountBalance)}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Tampilan jika tidak ada produk */}
                         {products.length === 0 && (
                             <div className="flex flex-col items-center justify-center rounded-lg border py-20 text-center">
