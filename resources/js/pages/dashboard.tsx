@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, User } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import { userbalance } from '@/pages/seller/balance/data-table';
 
 // === DEFINISI TIPE DATA (Hanya yang diperlukan) ===
 interface Product {
@@ -28,6 +29,14 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('dashboard'),
     },
 ];
+
+function formatRupiah(angka: number): string {
+  return angka.toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  });
+}
 
 // Helper untuk format mata uang
 const formatCurrency = (amount: number) => {

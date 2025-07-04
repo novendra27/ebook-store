@@ -150,8 +150,8 @@ export default function CreateProduct({ auth }: { auth: any }) {
                                         onChange={(e) => setData('payment_type_id', e.target.value)}
                                         className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     >
-                                        <option value="1">Gratis</option>
-                                        <option value="2">Berbayar</option>
+                                        <option value="1">Berbayar</option>
+                                        <option value="2">Gratis</option>
                                     </select>
                                     {errors.payment_type_id && <p className="mt-1 text-sm text-red-600">{errors.payment_type_id}</p>}
                                 </div>
