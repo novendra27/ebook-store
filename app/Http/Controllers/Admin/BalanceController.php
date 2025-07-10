@@ -16,19 +16,21 @@ class BalanceController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
-        
+
         $balances = Balance::where('seller_id', $user->seller->id)
             ->with(['invoice'])
             ->latest()
             ->get();
 
         // Get the current balance from the latest balance record
-        $currentBalance = $balances->first()->balance_after ?? 0;
-        
+        // $currentBalance = $balances->first()->balance_after ?? 0;
+        $currentBalance = Balance::where('seller_id', $user->seller->id)
+                                ->sum('change_amount');
+
         return Inertia::render('seller/balance/index', [
             'balances' => $balances,
             'currentBalance' => $currentBalance,
@@ -41,11 +43,11 @@ class BalanceController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
-        
+
         // Get the current balance from the latest balance record
         $currentBalance = $user->seller->balances()->latest()->first()->balance_after ?? 0;
 
@@ -60,7 +62,7 @@ class BalanceController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
@@ -72,7 +74,7 @@ class BalanceController extends Controller
 
         // Get current balance
         $currentBalance = $user->seller->balances()->latest()->first()->balance_after ?? 0;
-        
+
         // Check if sufficient balance
         if ($request->amount > $currentBalance) {
             return back()->withErrors(['amount' => 'Insufficient balance for withdrawal.']);

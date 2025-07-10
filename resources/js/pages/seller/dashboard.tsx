@@ -1,23 +1,9 @@
-import AppLayout from "@/layouts/app-layout";
-import { BreadcrumbItem } from "@/types";
-import { Head } from "@inertiajs/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Link } from "@inertiajs/react";
-import { 
-    Package, 
-    ShoppingCart, 
-    DollarSign, 
-    Wallet, 
-    TrendingUp, 
-    TrendingDown,
-    AlertTriangle,
-    Eye,
-    Plus,
-    BarChart3,
-    Users,
-    Calendar
-} from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { AlertTriangle, BarChart3, DollarSign, Eye, Package, Plus, ShoppingCart, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -95,14 +81,7 @@ interface DashboardProps {
     seller: Seller;
 }
 
-export default function SellerDashboard({ 
-    stats, 
-    recentProducts, 
-    recentTransactions, 
-    monthlyRevenueChart, 
-    topProducts,
-    seller 
-}: DashboardProps) {
+export default function SellerDashboard({ stats, recentProducts, recentTransactions, monthlyRevenueChart, topProducts, seller }: DashboardProps) {
     const formatRupiah = (amount: number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -115,17 +94,17 @@ export default function SellerDashboard({
         return new Date(dateString).toLocaleDateString('id-ID', {
             day: '2-digit',
             month: '2-digit',
-            year: 'numeric'
+            year: 'numeric',
         });
     };
 
-    const StatCard = ({ 
-        title, 
-        value, 
-        description, 
-        icon: Icon, 
+    const StatCard = ({
+        title,
+        value,
+        description,
+        icon: Icon,
         trend,
-        color = "blue"
+        color = 'blue',
     }: {
         title: string;
         value: string | number;
@@ -138,23 +117,23 @@ export default function SellerDashboard({
             blue: 'bg-blue-500',
             green: 'bg-green-500',
             yellow: 'bg-yellow-500',
-            red: 'bg-red-500'
+            red: 'bg-red-500',
         };
 
         return (
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                    <div className={`p-2 rounded-full ${colorClasses[color]} text-white`}>
+                    <div className={`rounded-full p-2 ${colorClasses[color]} text-white`}>
                         <Icon className="h-4 w-4" />
                     </div>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{value}</div>
                     {description && (
-                        <div className="flex items-center text-xs text-muted-foreground mt-1">
-                            {trend === 'up' && <TrendingUp className="h-3 w-3 mr-1 text-green-500" />}
-                            {trend === 'down' && <TrendingDown className="h-3 w-3 mr-1 text-red-500" />}
+                        <div className="mt-1 flex items-center text-xs text-muted-foreground">
+                            {trend === 'up' && <TrendingUp className="mr-1 h-3 w-3 text-green-500" />}
+                            {trend === 'down' && <TrendingDown className="mr-1 h-3 w-3 text-red-500" />}
                             {description}
                         </div>
                     )}
@@ -168,16 +147,16 @@ export default function SellerDashboard({
             <Head title="Seller Dashboard" />
             <div className="flex flex-1 flex-col gap-6 rounded-xl p-4">
                 {/* Welcome Section */}
-                <div className="border-sidebar-border/70 dark:border-sidebar-border rounded-xl border p-6">
+                <div className="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold">Welcome back, {seller.business_name}!</h1>
-                            <p className="text-gray-600 mt-2">Here's what's happening with your e-book store today.</p>
+                            <p className="mt-2 text-gray-600">Here's what's happening with your e-book store today.</p>
                         </div>
                         <div className="flex gap-3">
                             <Button variant="outline" asChild>
                                 <Link href={route('seller.products.index')}>
-                                    <Package className="h-4 w-4 mr-2" />
+                                    <Package className="mr-2 h-4 w-4" />
                                     Manage Products
                                 </Link>
                             </Button>
@@ -261,7 +240,7 @@ export default function SellerDashboard({
                                 </div>
                                 <Button variant="outline" size="sm" asChild>
                                     <Link href={route('seller.products.index')}>
-                                        <Eye className="h-4 w-4 mr-2" />
+                                        <Eye className="mr-2 h-4 w-4" />
                                         View All
                                     </Link>
                                 </Button>
@@ -271,23 +250,23 @@ export default function SellerDashboard({
                             <div className="space-y-4">
                                 {recentProducts.length > 0 ? (
                                     recentProducts.map((product) => (
-                                        <div key={product.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                        <div key={product.id} className="flex items-center justify-between rounded-lg border p-3">
                                             <div className="flex-1">
-                                                <p className="font-medium text-sm">{product.name.length > 40 ? `${product.name.substring(0, 40)}...` : product.name}</p>
-                                                <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                                                <p className="text-sm font-medium">
+                                                    {product.name.length > 40 ? `${product.name.substring(0, 40)}...` : product.name}
+                                                </p>
+                                                <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
                                                     <span>Price: {formatRupiah(product.price)}</span>
                                                     <span>Stock: {product.stock}</span>
                                                     <span>{product.product_detail?.author || 'No author'}</span>
                                                 </div>
                                             </div>
-                                            <div className="text-xs text-gray-500">
-                                                {formatDate(product.created_at)}
-                                            </div>
+                                            <div className="text-xs text-gray-500">{formatDate(product.created_at)}</div>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-8 text-gray-500">
-                                        <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                    <div className="py-8 text-center text-gray-500">
+                                        <Package className="mx-auto mb-4 h-12 w-12 opacity-50" />
                                         <p>No products yet</p>
                                         <Button className="mt-4" asChild>
                                             <Link href={route('seller.products.create')}>Add Your First Product</Link>
@@ -308,7 +287,7 @@ export default function SellerDashboard({
                                 </div>
                                 <Button variant="outline" size="sm" asChild>
                                     <Link href={route('transactions.index')}>
-                                        <Eye className="h-4 w-4 mr-2" />
+                                        <Eye className="mr-2 h-4 w-4" />
                                         View All
                                     </Link>
                                 </Button>
@@ -318,10 +297,10 @@ export default function SellerDashboard({
                             <div className="space-y-4">
                                 {recentTransactions.length > 0 ? (
                                     recentTransactions.map((transaction) => (
-                                        <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                        <div key={transaction.id} className="flex items-center justify-between rounded-lg border p-3">
                                             <div className="flex-1">
-                                                <p className="font-medium text-sm">Order #{transaction.id}</p>
-                                                <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                                                <p className="text-sm font-medium">Order #{transaction.id}</p>
+                                                <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
                                                     <span>Customer: {transaction.user.name}</span>
                                                     <span>{transaction.items.reduce((sum: number, item: any) => sum + item.quantity, 0)} items</span>
                                                 </div>
@@ -333,8 +312,8 @@ export default function SellerDashboard({
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-8 text-gray-500">
-                                        <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                    <div className="py-8 text-center text-gray-500">
+                                        <ShoppingCart className="mx-auto mb-4 h-12 w-12 opacity-50" />
                                         <p>No transactions yet</p>
                                     </div>
                                 )}
@@ -355,12 +334,14 @@ export default function SellerDashboard({
                             <div className="space-y-4">
                                 {topProducts.length > 0 ? (
                                     topProducts.map((product, index) => (
-                                        <div key={product.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold text-sm">
+                                        <div key={product.id} className="flex items-center gap-4 rounded-lg border p-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
                                                 {index + 1}
                                             </div>
                                             <div className="flex-1">
-                                                <p className="font-medium text-sm">{product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}</p>
+                                                <p className="text-sm font-medium">
+                                                    {product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
+                                                </p>
                                                 <p className="text-xs text-gray-500">Price: {formatRupiah(product.price)}</p>
                                             </div>
                                             <div className="text-right">
@@ -370,8 +351,8 @@ export default function SellerDashboard({
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="text-center py-8 text-gray-500">
-                                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                                    <div className="py-8 text-center text-gray-500">
+                                        <BarChart3 className="mx-auto mb-4 h-12 w-12 opacity-50" />
                                         <p>No sales data yet</p>
                                     </div>
                                 )}
@@ -388,20 +369,17 @@ export default function SellerDashboard({
                         <CardContent>
                             <div className="space-y-4">
                                 {monthlyRevenueChart.map((data, index) => {
-                                    const maxRevenue = Math.max(...monthlyRevenueChart.map(d => d.revenue));
+                                    const maxRevenue = Math.max(...monthlyRevenueChart.map((d) => d.revenue));
                                     const percentage = maxRevenue > 0 ? (data.revenue / maxRevenue) * 100 : 0;
-                                    
+
                                     return (
                                         <div key={index} className="space-y-2">
                                             <div className="flex justify-between text-sm">
                                                 <span>{data.month}</span>
                                                 <span className="font-medium">{formatRupiah(data.revenue)}</span>
                                             </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
-                                                <div 
-                                                    className="bg-blue-600 h-2 rounded-full transition-all"
-                                                    style={{ width: `${percentage}%` }}
-                                                />
+                                            <div className="h-2 w-full rounded-full bg-gray-200">
+                                                <div className="h-2 rounded-full bg-blue-600 transition-all" style={{ width: `${percentage}%` }} />
                                             </div>
                                         </div>
                                     );

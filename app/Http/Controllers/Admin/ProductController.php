@@ -19,7 +19,7 @@ class ProductController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
@@ -56,7 +56,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
@@ -132,7 +132,7 @@ class ProductController extends Controller
             'is_affiliate' => $request->is_affiliate ?? false,
         ]);
 
-        return redirect()->route('products.index')
+        return redirect()->route('seller.products.index')
             ->with('success', 'Product created successfully!');
     }
 
@@ -142,7 +142,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
@@ -166,7 +166,7 @@ class ProductController extends Controller
         $product = Product::where('seller_id', $user->seller->id)
             ->with(['productDetail'])
             ->findOrFail($id);
-        
+
         $paymentTypes = PaymentType::all();
 
         return Inertia::render('seller/products/edit', [
@@ -181,7 +181,7 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
@@ -282,7 +282,7 @@ class ProductController extends Controller
             'is_affiliate' => $request->is_affiliate ?? false,
         ]);
 
-        return redirect()->route('products.index')
+        return redirect()->route('seller.products.index')
             ->with('success', 'Product updated successfully!');
     }
 
@@ -292,7 +292,7 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $user = Auth::user();
-        
+
         if (!$user || !$user->seller) {
             abort(403, 'You must be a seller to access this page.');
         }
@@ -302,7 +302,7 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('products.index')
+        return redirect()->route('seller.products.index')
             ->with('success', 'Product deleted successfully!');
     }
 }

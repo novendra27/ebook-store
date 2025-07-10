@@ -16,6 +16,14 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
+Route::get('/about', function () {
+    return Inertia::render('about');
+})->name('about');
+
+Route::get('/privacy-policy', function () {
+    return Inertia::render('privacy-policy');
+})->name('privacy.policy');
+
 // User/Buyer Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -30,17 +38,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
     Route::post('/invoice/create', [InvoiceController::class, 'store'])->name('invoice.store');
     Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+
+    Route::get('/purchases/{product}', [UserProductController::class, 'showPurchased'])
+         ->name('purchases.show');
+
 });
 
 // Admin/Seller Routes
 Route::middleware(['auth', EnsureSeller::class])->group(function () {
     Route::get('/seller', [SellerDashboardController::class, 'index'])->name('seller.dashboard');
-    
+
     // Transactions
     Route::resource('seller/transactions', TransactionController::class)
         ->only(['index', 'show'])
         ->names('transactions');
-    
+
     // Balances
     Route::resource('seller/balances', BalanceController::class)
         ->only(['index', 'create', 'store', 'show'])
@@ -48,6 +60,7 @@ Route::middleware(['auth', EnsureSeller::class])->group(function () {
 
     // Products
     Route::resource('seller/products', ProductController::class)
+        ->only(['index', 'create', 'store','show','edit', 'update', 'destroy'])
         ->names('seller.products');
 });
 

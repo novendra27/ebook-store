@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link } from '@inertiajs/react';
 
 interface InvoiceProduct {
+    id: number;
     title: string;
     cover: string;
 }
@@ -58,6 +59,11 @@ export default function InvoiceDetail({ invoice }: InvoiceProps) {
                                     <div className="text-xs text-muted-foreground">
                                         {item.quantity ?? 0} x Rp{typeof item.amount === 'number' ? item.amount.toLocaleString('id-ID') : '0'}
                                     </div>
+                                    {invoice.status === 'paid' && (
+                                        <Button variant="link" size="sm" asChild className="mt-1 h-auto p-0">
+                                            <Link href={route('purchases.show', { product: item.product.id })}>Lihat Buku</Link>
+                                        </Button>
+                                    )}
                                 </div>
                                 <div className="text-sm font-semibold">
                                     {typeof item.amount === 'number' && typeof item.quantity === 'number'

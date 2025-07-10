@@ -15,6 +15,8 @@ class EnsureSeller
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // dd($request->user());
+
         if ($request->user()?->role !== 'seller') {
             abort(403, 'Unauthorized action.');
         }

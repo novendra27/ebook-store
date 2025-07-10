@@ -1,15 +1,15 @@
-import AppLayout from "@/layouts/app-layout";
-import { BreadcrumbItem } from "@/types";
-import { Head, useForm, Link } from "@inertiajs/react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Upload, Eye, Save, X } from "lucide-react";
-import { FormEventHandler, useState } from "react";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem } from '@/types';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { ArrowLeft, Eye, Save, Upload, X } from 'lucide-react';
+import { FormEventHandler, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -82,7 +82,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        
+
         post(route('seller.products.store'), {
             forceFormData: true,
             onSuccess: () => {
@@ -104,21 +104,31 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
 
     const getStepTitle = () => {
         switch (step) {
-            case 1: return 'Basic Information';
-            case 2: return 'Book Details';
-            case 3: return 'Files & Media';
-            case 4: return 'Configuration';
-            default: return 'Product Information';
+            case 1:
+                return 'Basic Information';
+            case 2:
+                return 'Book Details';
+            case 3:
+                return 'Files & Media';
+            case 4:
+                return 'Configuration';
+            default:
+                return 'Product Information';
         }
     };
 
     const getStepDescription = () => {
         switch (step) {
-            case 1: return 'Enter basic product details';
-            case 2: return 'Enter book-specific information';
-            case 3: return 'Upload cover image and e-book file';
-            case 4: return 'Configure settings and options';
-            default: return 'Complete the product setup';
+            case 1:
+                return 'Enter basic product details';
+            case 2:
+                return 'Enter book-specific information';
+            case 3:
+                return 'Upload cover image and e-book file';
+            case 4:
+                return 'Configure settings and options';
+            default:
+                return 'Complete the product setup';
         }
     };
 
@@ -126,18 +136,18 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Product" />
             <div className="flex flex-1 flex-col gap-4 rounded-xl p-4">
-                <div className="border-sidebar-border/70 dark:border-sidebar-border rounded-xl border p-4 md:p-8">
+                <div className="rounded-xl border border-sidebar-border/70 p-4 md:p-8 dark:border-sidebar-border">
                     {/* Header with Back Button */}
-                    <div className="flex items-center gap-4 mb-6">
+                    <div className="mb-6 flex items-center gap-4">
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/seller/products">
-                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                <ArrowLeft className="mr-2 h-4 w-4" />
                                 Back to Products
                             </Link>
                         </Button>
                     </div>
 
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="mb-6 flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl font-semibold">Create New Product</h1>
                             <p className="text-sm text-gray-500">Add a new e-book product to your store.</p>
@@ -146,18 +156,18 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                             <div className="flex items-center space-x-2">
                                 {[1, 2, 3, 4].map((i) => (
                                     <div key={i} className="flex items-center">
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                                            i === step ? 'bg-blue-600 text-white' : 
-                                            i < step ? 'bg-green-600 text-white' : 
-                                            'bg-gray-200 text-gray-600'
-                                        }`}>
+                                        <div
+                                            className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
+                                                i === step
+                                                    ? 'bg-blue-600 text-white'
+                                                    : i < step
+                                                      ? 'bg-green-600 text-white'
+                                                      : 'bg-gray-200 text-gray-600'
+                                            }`}
+                                        >
                                             {i}
                                         </div>
-                                        {i < 4 && (
-                                            <div className={`w-8 h-0.5 mx-2 ${
-                                                i < step ? 'bg-green-600' : 'bg-gray-200'
-                                            }`} />
-                                        )}
+                                        {i < 4 && <div className={`mx-2 h-0.5 w-8 ${i < step ? 'bg-green-600' : 'bg-gray-200'}`} />}
                                     </div>
                                 ))}
                             </div>
@@ -185,9 +195,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                 className="text-base"
                                                 required
                                             />
-                                            {errors.name && (
-                                                <p className="text-sm text-red-600">{errors.name}</p>
-                                            )}
+                                            {errors.name && <p className="text-sm text-red-600">{errors.name}</p>}
                                         </div>
 
                                         <div className="space-y-2">
@@ -201,12 +209,10 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                 className="text-base"
                                                 required
                                             />
-                                            {errors.description && (
-                                                <p className="text-sm text-red-600">{errors.description}</p>
-                                            )}
+                                            {errors.description && <p className="text-sm text-red-600">{errors.description}</p>}
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="price">Price (IDR) *</Label>
                                                 <Input
@@ -220,9 +226,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     className="text-base"
                                                     required
                                                 />
-                                                {errors.price && (
-                                                    <p className="text-sm text-red-600">{errors.price}</p>
-                                                )}
+                                                {errors.price && <p className="text-sm text-red-600">{errors.price}</p>}
                                             </div>
 
                                             <div className="space-y-2">
@@ -238,13 +242,11 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     className="text-base"
                                                     required
                                                 />
-                                                {errors.fake_price && (
-                                                    <p className="text-sm text-red-600">{errors.fake_price}</p>
-                                                )}
+                                                {errors.fake_price && <p className="text-sm text-red-600">{errors.fake_price}</p>}
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="payment_type_id">Payment Type *</Label>
                                                 <Select value={data.payment_type_id} onValueChange={(value) => setData('payment_type_id', value)}>
@@ -259,9 +261,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                {errors.payment_type_id && (
-                                                    <p className="text-sm text-red-600">{errors.payment_type_id}</p>
-                                                )}
+                                                {errors.payment_type_id && <p className="text-sm text-red-600">{errors.payment_type_id}</p>}
                                             </div>
 
                                             <div className="space-y-2">
@@ -275,9 +275,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     min="0"
                                                     className="text-base"
                                                 />
-                                                {errors.stock && (
-                                                    <p className="text-sm text-red-600">{errors.stock}</p>
-                                                )}
+                                                {errors.stock && <p className="text-sm text-red-600">{errors.stock}</p>}
                                             </div>
                                         </div>
 
@@ -291,7 +289,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
 
                                 {step === 2 && (
                                     <div className="space-y-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="author">Author</Label>
                                                 <Input
@@ -302,9 +300,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     placeholder="Enter author name"
                                                     className="text-base"
                                                 />
-                                                {errors.author && (
-                                                    <p className="text-sm text-red-600">{errors.author}</p>
-                                                )}
+                                                {errors.author && <p className="text-sm text-red-600">{errors.author}</p>}
                                             </div>
 
                                             <div className="space-y-2">
@@ -317,13 +313,11 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     placeholder="Enter ISBN number"
                                                     className="text-base"
                                                 />
-                                                {errors.isbn && (
-                                                    <p className="text-sm text-red-600">{errors.isbn}</p>
-                                                )}
+                                                {errors.isbn && <p className="text-sm text-red-600">{errors.isbn}</p>}
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="language">Language</Label>
                                                 <Input
@@ -334,9 +328,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     placeholder="Enter language (e.g., Indonesian, English)"
                                                     className="text-base"
                                                 />
-                                                {errors.language && (
-                                                    <p className="text-sm text-red-600">{errors.language}</p>
-                                                )}
+                                                {errors.language && <p className="text-sm text-red-600">{errors.language}</p>}
                                             </div>
 
                                             <div className="space-y-2">
@@ -350,9 +342,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     min="1"
                                                     className="text-base"
                                                 />
-                                                {errors.page && (
-                                                    <p className="text-sm text-red-600">{errors.page}</p>
-                                                )}
+                                                {errors.page && <p className="text-sm text-red-600">{errors.page}</p>}
                                             </div>
                                         </div>
 
@@ -365,9 +355,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                 onChange={(e) => setData('publish_date', e.target.value)}
                                                 className="text-base"
                                             />
-                                            {errors.publish_date && (
-                                                <p className="text-sm text-red-600">{errors.publish_date}</p>
-                                            )}
+                                            {errors.publish_date && <p className="text-sm text-red-600">{errors.publish_date}</p>}
                                         </div>
 
                                         <div className="flex justify-between">
@@ -383,17 +371,17 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
 
                                 {step === 3 && (
                                     <div className="space-y-6">
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                                             {/* Cover Image Upload */}
                                             <div className="space-y-4">
                                                 <Label>Cover Image *</Label>
-                                                <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                                                <div className="relative rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-gray-400">
                                                     {coverPreview ? (
                                                         <div className="space-y-3">
                                                             <img
                                                                 src={coverPreview}
                                                                 alt="Cover preview"
-                                                                className="w-32 h-40 object-cover mx-auto rounded-lg border"
+                                                                className="mx-auto h-40 w-32 rounded-lg border object-cover"
                                                             />
                                                             <div className="flex justify-center gap-2">
                                                                 <Button
@@ -405,7 +393,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                                         setData('cover', null);
                                                                     }}
                                                                 >
-                                                                    <X className="h-4 w-4 mr-1" />
+                                                                    <X className="mr-1 h-4 w-4" />
                                                                     Remove
                                                                 </Button>
                                                                 <Button
@@ -414,21 +402,17 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                                     size="sm"
                                                                     onClick={() => window.open(coverPreview, '_blank')}
                                                                 >
-                                                                    <Eye className="h-4 w-4 mr-1" />
+                                                                    <Eye className="mr-1 h-4 w-4" />
                                                                     Preview
                                                                 </Button>
                                                             </div>
                                                         </div>
                                                     ) : (
                                                         <div className="space-y-3">
-                                                            <Upload className="h-12 w-12 text-gray-400 mx-auto" />
+                                                            <Upload className="mx-auto h-12 w-12 text-gray-400" />
                                                             <div>
-                                                                <p className="text-sm text-gray-600">
-                                                                    Click to upload cover image
-                                                                </p>
-                                                                <p className="text-xs text-gray-500 mt-1">
-                                                                    PNG, JPG, JPEG up to 10MB
-                                                                </p>
+                                                                <p className="text-sm text-gray-600">Click to upload cover image</p>
+                                                                <p className="mt-1 text-xs text-gray-500">PNG, JPG, JPEG up to 10MB</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -436,7 +420,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={handleCoverChange}
-                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
@@ -450,27 +434,21 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                         className="text-base"
                                                     />
                                                 </div>
-                                                {errors.cover && (
-                                                    <p className="text-sm text-red-600">{errors.cover}</p>
-                                                )}
+                                                {errors.cover && <p className="text-sm text-red-600">{errors.cover}</p>}
                                             </div>
 
                                             {/* E-book File Upload */}
                                             <div className="space-y-4">
                                                 <Label>E-book File *</Label>
-                                                <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                                                <div className="relative rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-gray-400">
                                                     <div className="space-y-3">
-                                                        <Upload className="h-12 w-12 text-gray-400 mx-auto" />
+                                                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
                                                         <div>
-                                                            <p className="text-sm text-gray-600">
-                                                                Click to upload e-book file
-                                                            </p>
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                PDF, EPUB, MOBI up to 50MB
-                                                            </p>
+                                                            <p className="text-sm text-gray-600">Click to upload e-book file</p>
+                                                            <p className="mt-1 text-xs text-gray-500">PDF, EPUB, MOBI up to 50MB</p>
                                                         </div>
                                                         {data.file_content && (
-                                                            <div className="text-sm text-green-600 font-medium">
+                                                            <div className="text-sm font-medium text-green-600">
                                                                 📄 {filePreview || 'No file selected'}
                                                             </div>
                                                         )}
@@ -479,7 +457,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                         type="file"
                                                         accept=".pdf,.epub,.mobi"
                                                         onChange={handleFileContentChange}
-                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
@@ -493,9 +471,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                         className="text-base"
                                                     />
                                                 </div>
-                                                {errors.file_content && (
-                                                    <p className="text-sm text-red-600">{errors.file_content}</p>
-                                                )}
+                                                {errors.file_content && <p className="text-sm text-red-600">{errors.file_content}</p>}
                                             </div>
                                         </div>
 
@@ -512,7 +488,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
 
                                 {step === 4 && (
                                     <div className="space-y-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div className="space-y-2">
                                                 <Label htmlFor="start_date">Sale Start Date *</Label>
                                                 <Input
@@ -523,9 +499,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     className="text-base"
                                                     required
                                                 />
-                                                {errors.start_date && (
-                                                    <p className="text-sm text-red-600">{errors.start_date}</p>
-                                                )}
+                                                {errors.start_date && <p className="text-sm text-red-600">{errors.start_date}</p>}
                                             </div>
 
                                             <div className="space-y-2">
@@ -538,9 +512,7 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                     className="text-base"
                                                     required
                                                 />
-                                                {errors.end_date && (
-                                                    <p className="text-sm text-red-600">{errors.end_date}</p>
-                                                )}
+                                                {errors.end_date && <p className="text-sm text-red-600">{errors.end_date}</p>}
                                             </div>
                                         </div>
 
@@ -554,34 +526,36 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                 rows={3}
                                                 className="text-base"
                                             />
-                                            {errors.note && (
-                                                <p className="text-sm text-red-600">{errors.note}</p>
-                                            )}
+                                            {errors.note && <p className="text-sm text-red-600">{errors.note}</p>}
                                         </div>
 
                                         <div className="space-y-4">
                                             <Label>Product Settings</Label>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                <div className="flex items-center space-x-3 rounded-lg border p-4">
                                                     <Checkbox
                                                         id="is_download"
                                                         checked={data.is_download}
                                                         onCheckedChange={(checked) => setData('is_download', checked as boolean)}
                                                     />
                                                     <div>
-                                                        <Label htmlFor="is_download" className="font-medium">Allow Download</Label>
+                                                        <Label htmlFor="is_download" className="font-medium">
+                                                            Allow Download
+                                                        </Label>
                                                         <p className="text-sm text-gray-500">Allow customers to download the e-book</p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                                                <div className="flex items-center space-x-3 rounded-lg border p-4">
                                                     <Checkbox
                                                         id="is_affiliate"
                                                         checked={data.is_affiliate}
                                                         onCheckedChange={(checked) => setData('is_affiliate', checked as boolean)}
                                                     />
                                                     <div>
-                                                        <Label htmlFor="is_affiliate" className="font-medium">Enable Affiliate</Label>
+                                                        <Label htmlFor="is_affiliate" className="font-medium">
+                                                            Enable Affiliate
+                                                        </Label>
                                                         <p className="text-sm text-gray-500">Allow affiliate marketing for this product</p>
                                                     </div>
                                                 </div>
@@ -593,20 +567,12 @@ export default function CreateProduct({ paymentTypes }: { paymentTypes: PaymentT
                                                 Previous
                                             </Button>
                                             <div className="flex gap-2">
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    asChild
-                                                >
-                                                    <Link href="/seller/products">
-                                                        Cancel
-                                                    </Link>
+                                                <Button type="button" variant="outline" asChild>
+                                                    <Link href="/seller/products">Cancel</Link>
                                                 </Button>
-                                                <Button
-                                                    type="submit"
-                                                    disabled={processing}
-                                                >
-                                                    <Save className="h-4 w-4 mr-2" />
+                                                <Button type="submit" disabled={processing}>
+                                                    <Link href="/seller/products"></Link>
+                                                    <Save className="mr-2 h-4 w-4" />
                                                     {processing ? 'Creating...' : 'Create Product'}
                                                 </Button>
                                             </div>

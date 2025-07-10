@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Balance;
 use App\Models\Cart;
 use App\Models\Invoice;
 use App\Models\InvoiceProduct;
@@ -130,23 +131,28 @@ class InvoiceController extends Controller
         return Inertia::render('invoice-detail', compact('invoice'));
     }
 
+    public function invoiceProducts($id)
+    {
+        $invoice = Invoice::with('items.product')->findOrFail($id);
+        // dd($invoice);
+        return Inertia::render('invoice-products', compact('invoice'));
+    }
+
     public function callbackXendit(Request $request)
     {
-
         Log::info('Xendit Callback Hit', $request->all());
         Log::info('Headers', $request->headers->all());
 
         $getToken = $request->header('x-callback-token');
         $callbackToken = config('xendit.CALLBACK_TOKEN');
 
-        if ($getToken != $callbackToken) {
+        if ($getToken !== $callbackToken) {
             Log::warning('Invalid token: ' . $getToken);
             return response()->json([
                 'message' => 'unauthorized',
             ], 401);
         }
 
-        // cek invoice id dari xendit dengan external id di database
         $invoice = Invoice::where('invoice_code', $request->external_id)->first();
         if (!$invoice) {
             Log::warning('Invoice Not Found: ' . $request->external_id);
@@ -154,20 +160,110 @@ class InvoiceController extends Controller
                 'message' => 'Invoice Not Found',
             ], 404);
         }
-        $data = date_create($request->paid_at);
-        $paid_at = date_format($data, 'Y-m-d H:i:s');
-        $invoice->update([
-            'paid_at' => $paid_at,
-            'status' => ($request->status == 'PAID' || $request->status == 'SETTLED') ? 'paid' : 'failed',
-            'payment_method' => $request->payment_method,
-            'payment_channel' => $request->payment_channel
-        ]);
+
+        // Hanya proses jika invoice masih pending untuk menghindari duplikasi
+        if ($invoice->status !== 'pending') {
+            Log::info('Invoice already processed', ['invoice_id' => $invoice->id, 'status' => $invoice->status]);
+            return response()->json([
+                'message' => 'Invoice already processed',
+            ], 200);
+        }
+
+        $isPaid = in_array($request->status, ['PAID', 'SETTLED']);
+
+        // Gunakan DB Transaction untuk memastikan integritas data
+        DB::transaction(function () use ($invoice, $request, $isPaid) {
+            $data = date_create($request->paid_at);
+            $paid_at = date_format($data, 'Y-m-d H:i:s');
+
+            // Update status invoice
+            $invoice->update([
+                'paid_at' => $isPaid ? $paid_at : null,
+                'status' => $isPaid ? 'paid' : 'failed',
+                'payment_method' => $request->payment_method,
+                'payment_channel' => $request->payment_channel,
+            ]);
+
+            // START: Logic penambahan balance untuk seller
+            if ($isPaid) {
+                // Ambil semua item dari invoice beserta relasi produk dan penjualnya
+                $invoiceItems = $invoice->items()->with('product.seller')->get();
+
+                foreach ($invoiceItems as $item) {
+                    $product = $item->product;
+                    $seller = $product->seller;
+
+                    // Lanjutkan hanya jika produk memiliki seller
+                    if (!$seller) {
+                        continue;
+                    }
+
+                    // Hitung pendapatan dari item ini
+                    $income = $item->amount * $item->quantity;
+
+                    // Dapatkan saldo terakhir seller
+                    $lastBalance = Balance::where('seller_id', $seller->id)
+                        ->orderBy('id', 'desc')
+                        ->first();
+
+                    $previousBalance = $lastBalance ? $lastBalance->balance_after : 0;
+
+                    // Hitung saldo baru
+                    $newBalance = $previousBalance + $income;
+
+                    // Buat record balance baru
+                    Balance::create([
+                        'seller_id' => $seller->id,
+                        'invoice_id' => $invoice->id,
+                        'change_amount' => $income,
+                        'balance_after' => $newBalance,
+                        'note' => 'Sale of product: ' . $product->name,
+                    ]);
+                }
+            }
+            // END: Logic penambahan balance
+        });
 
         Log::info('Invoice updated successfully', ['invoice_id' => $invoice->id]);
 
         return response()->json([
             'message' => 'Success',
         ], 200);
+    //     Log::info('Xendit Callback Hit', $request->all());
+    //     Log::info('Headers', $request->headers->all());
+
+    //     $getToken = $request->header('x-callback-token');
+    //     $callbackToken = config('xendit.CALLBACK_TOKEN');
+
+    //     if ($getToken != $callbackToken) {
+    //         Log::warning('Invalid token: ' . $getToken);
+    //         return response()->json([
+    //             'message' => 'unauthorized',
+    //         ], 401);
+    //     }
+
+    //     // cek invoice id dari xendit dengan external id di database
+    //     $invoice = Invoice::where('invoice_code', $request->external_id)->first();
+    //     if (!$invoice) {
+    //         Log::warning('Invoice Not Found: ' . $request->external_id);
+    //         return response()->json([
+    //             'message' => 'Invoice Not Found',
+    //         ], 404);
+    //     }
+    //     $data = date_create($request->paid_at);
+    //     $paid_at = date_format($data, 'Y-m-d H:i:s');
+    //     $invoice->update([
+    //         'paid_at' => $paid_at,
+    //         'status' => ($request->status == 'PAID' || $request->status == 'SETTLED') ? 'paid' : 'failed',
+    //         'payment_method' => $request->payment_method,
+    //         'payment_channel' => $request->payment_channel
+    //     ]);
+
+    //     Log::info('Invoice updated successfully', ['invoice_id' => $invoice->id]);
+
+    //     return response()->json([
+    //         'message' => 'Success',
+    //     ], 200);
     }
 
 }

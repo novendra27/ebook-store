@@ -55,6 +55,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             placeholder="email@example.com"
                         />
                         <InputError message={errors.email} />
+                        <p className="text-xs text-gray-500">Seller: seller@gmail.com</p>
+                        <p className="text-xs text-gray-500">Buyer: adi.novendra.p@gmail.com</p>
                     </div>
 
                     <div className="grid gap-2">
@@ -77,6 +79,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             placeholder="Password"
                         />
                         <InputError message={errors.password} />
+                        <p className="text-xs text-gray-500">Seller: seller</p>
+                        <p className="text-xs text-gray-500">Buyer: password</p>
                     </div>
 
                     <div className="flex items-center space-x-3">
@@ -102,8 +106,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         Sign up
                     </TextLink>
                 </div>
-            </form>
+                {/* <div className="mb-4">
 
+                </div> */}
+            </form>
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
         </AuthLayout>
     );
