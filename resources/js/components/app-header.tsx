@@ -10,7 +10,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { Home, Menu, ShoppingCart, Trash } from 'lucide-react';
+import { BookHeartIcon, Home, Menu, PersonStanding, ShieldBanIcon, ShoppingCart, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import AppLogo from './app-logo';
@@ -22,6 +22,21 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: Home,
+    },
+    {
+        title: 'Pembelian',
+        href: '/invoice',
+        icon: BookHeartIcon,
+    },
+    {
+        title: 'About us',
+        href: '/about',
+        icon: PersonStanding,
+    },
+    {
+        title: 'Privacy Policy',
+        href: '/privacy-policy',
+        icon: ShieldBanIcon,
     },
 ];
 
@@ -203,9 +218,9 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         </Sheet>
                     </div>
 
-                    <Link href="/" prefetch className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2">
                         <AppLogo />
-                    </Link>
+                    </div>
 
                     {/* Desktop Navigation */}
                     <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">

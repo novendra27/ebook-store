@@ -1,3 +1,4 @@
+import Footer from '@/components/footer';
 import { Toaster } from '@/components/ui/sonner';
 import BuyerLayoutTemplate from '@/layouts/app/app-header-layout';
 import SellerLayoutTemplate from '@/layouts/app/app-sidebar-layout';
@@ -27,6 +28,7 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
         <BuyerLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
             {children}
             <Toaster />
+            <Footer />
         </BuyerLayoutTemplate>
-    )
+    );
 };

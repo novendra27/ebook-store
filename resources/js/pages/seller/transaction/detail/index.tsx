@@ -100,7 +100,12 @@ export default function TransactionDetail({ invoiceProducts }: { invoiceProducts
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-500">Total Amount</p>
-                                    <p className="text-lg font-semibold">${invoice?.amount?.toFixed(2) || '0.00'}</p>
+                                    <p className="text-lg font-semibold">
+                                        {invoice?.amount ? new Intl.NumberFormat('id-ID', {
+                                            style: 'currency',
+                                            currency: 'IDR',
+                                        }).format(invoice.amount) : 'Rp 0'}
+                                    </p>
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-500">Transaction Date</p>
@@ -144,13 +149,19 @@ export default function TransactionDetail({ invoiceProducts }: { invoiceProducts
                                                     </p>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    ${item.product?.price?.toFixed(2) || '0.00'}
+                                                    {item.product?.price ? new Intl.NumberFormat('id-ID', {
+                                                        style: 'currency',
+                                                        currency: 'IDR',
+                                                    }).format(item.product.price) : 'Rp 0'}
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {item.quantity}
                                                 </TableCell>
                                                 <TableCell className="text-right font-medium">
-                                                    ${item.amount?.toFixed(2) || '0.00'}
+                                                    {item.amount ? new Intl.NumberFormat('id-ID', {
+                                                        style: 'currency',
+                                                        currency: 'IDR',
+                                                    }).format(item.amount) : 'Rp 0'}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -172,7 +183,10 @@ export default function TransactionDetail({ invoiceProducts }: { invoiceProducts
                                             Total Items: {totalQuantity}
                                         </div>
                                         <div className="text-lg font-semibold">
-                                            Total Amount: ${totalAmount.toFixed(2)}
+                                            Total Amount: {totalAmount ? new Intl.NumberFormat('id-ID', {
+                                                style: 'currency',
+                                                currency: 'IDR',
+                                            }).format(totalAmount) : 'Rp 0'}
                                         </div>
                                     </div>
                                 </div>
