@@ -1,6 +1,6 @@
 # E-book Store
 
-Aplikasi E-book Store adalah platform marketplace digital untuk jual-beli e-book yang dibangun dengan Laravel sebagai backend dan React (Inertia.js) sebagai frontend. Sistem ini mendukung dua role utama: **Buyer** (pembeli) dan **Seller** (penjual).
+E-book Store is a digital marketplace platform for buying and selling e-books built with Laravel as the backend and React (Inertia.js) as the frontend. The system supports two main roles: **Buyer** and **Seller**.
 
 ## 🚀 Tech Stack
 
@@ -13,29 +13,29 @@ Aplikasi E-book Store adalah platform marketplace digital untuk jual-beli e-book
 
 ## ✨ Features
 
-### Untuk Buyer:
-- 🛒 Browse dan pencarian e-book
+### For Buyers:
+- 🛒 Browse and search e-books
 - 🛍️ Shopping cart system
-- 💳 Checkout dengan Xendit payment gateway
+- 💳 Checkout with Xendit payment gateway
 - 📄 Invoice & transaction history
-- 📥 Download e-book yang sudah dibeli
+- 📥 Download purchased e-books
 - 👤 Profile management
 
-### Untuk Seller:
+### For Sellers:
 - 📚 Product management (CRUD)
 - 💰 Balance management & withdrawal
 - 📊 Transaction history
 - 📈 Dashboard analytics
-- 🎨 File upload untuk cover & e-book
+- 🎨 File upload for covers & e-books
 
 ## 📋 Requirements
 
 - PHP >= 8.2
 - Composer
 - Node.js >= 18.x
-- NPM atau Yarn
+- NPM or Yarn
 - MySQL >= 8.0
-- Laragon/XAMPP/MAMP (atau web server lainnya)
+- Laragon/XAMPP/MAMP (or other web server)
 
 ## 🔧 Installation
 
@@ -59,7 +59,7 @@ npm install
 ### 3. Environment Setup
 
 ```bash
-# Copy file .env.example ke .env
+# Copy .env.example to .env
 cp .env.example .env
 
 # Generate application key
@@ -68,7 +68,7 @@ php artisan key:generate
 
 ### 4. Database Configuration
 
-Edit file `.env` dan sesuaikan dengan konfigurasi database Anda:
+Edit the `.env` file and adjust it to your database configuration:
 
 ```env
 DB_CONNECTION=mysql
@@ -81,18 +81,18 @@ DB_PASSWORD=
 
 ### 5. Xendit Configuration (Optional)
 
-Jika ingin mengaktifkan payment gateway, tambahkan Xendit credentials di `.env`:
+If you want to enable payment gateway, add Xendit credentials in `.env`:
 
 ```env
 XENDIT_API_KEY=your_xendit_api_key
 XENDIT_CALLBACK_TOKEN=your_callback_token
 ```
 
-> **Note**: Untuk development, Anda bisa menggunakan Xendit test mode. Daftar di [https://xendit.co](https://xendit.co) untuk mendapatkan API key.
+> **Note**: For development, you can use Xendit test mode. Register at [https://xendit.co](https://xendit.co) to get an API key.
 
 ### 6. Create Database
 
-Buat database baru dengan nama `ebook_store`:
+Create a new database named `ebook_store`:
 
 ```sql
 CREATE DATABASE ebook_store CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -104,14 +104,14 @@ CREATE DATABASE ebook_store CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 # Run migrations
 php artisan migrate
 
-# Run seeders (optional - untuk data dummy)
+# Run seeders (optional - for dummy data)
 php artisan db:seed
 ```
 
 ### 8. Storage Link
 
 ```bash
-# Create symbolic link untuk storage
+# Create symbolic link for storage
 php artisan storage:link
 ```
 
@@ -129,26 +129,26 @@ npm run build
 
 ### Development Mode
 
-Jalankan 3 command ini di terminal terpisah:
+Run these 3 commands in separate terminals:
 
 ```bash
 # Terminal 1 - Laravel Server
 php artisan serve
 
-# Terminal 2 - Queue Worker (untuk background jobs)
+# Terminal 2 - Queue Worker (for background jobs)
 php artisan queue:listen --tries=1
 
 # Terminal 3 - Vite Dev Server
 npm run dev
 ```
 
-**Atau gunakan composer script** (lebih mudah):
+**Or use composer script** (easier):
 
 ```bash
 composer dev
 ```
 
-Aplikasi akan berjalan di:
+The application will run at:
 - Frontend: `http://localhost:5173`
 - Backend API: `http://localhost:8000`
 
@@ -164,7 +164,7 @@ php artisan serve
 
 ## 👥 Default Credentials
 
-Setelah menjalankan seeder, Anda bisa login dengan:
+After running the seeder, you can login with:
 
 ### Buyer Account
 - **Email**: adi.novendra.p@gmail.com
@@ -220,26 +220,26 @@ ebook-store/
 ## 🔑 Key Features Implementation
 
 ### Authentication & Authorization
-- Laravel Breeze untuk authentication
-- Custom middleware `EnsureSeller` untuk role-based access
+- Laravel Breeze for authentication
+- Custom middleware `EnsureSeller` for role-based access
 - Email verification
 
 ### File Management
 - Upload cover images (jpeg, png, jpg, gif - max 10MB)
 - Upload e-book files (pdf, epub, mobi - max 50MB)
-- Storage menggunakan Laravel Storage facade
+- Storage using Laravel Storage facade
 
 ### Payment Integration
 - Xendit payment gateway
-- Invoice generation dengan auto-increment
+- Invoice generation with auto-increment
 - Payment callback handling
 - Multiple payment channels
 
 ### Frontend
-- React dengan TypeScript
-- Inertia.js untuk SPA experience
+- React with TypeScript
+- Inertia.js for SPA experience
 - shadcn/ui components
-- TanStack Table untuk data display
+- TanStack Table for data display
 - Responsive design
 
 ## 🛠️ Development Commands
@@ -281,32 +281,32 @@ php artisan key:generate
 
 ### Error: "Storage link already exists"
 ```bash
-# Hapus link lama dan buat baru
+# Remove old link and create new one
 rm public/storage
 php artisan storage:link
 ```
 
 ### Error: "SQLSTATE[HY000] [1045] Access denied"
-- Pastikan konfigurasi database di `.env` sudah benar
-- Pastikan MySQL service sudah running
+- Make sure database configuration in `.env` is correct
+- Make sure MySQL service is running
 
-### Error: "npm run dev" tidak jalan
+### Error: "npm run dev" not working
 ```bash
-# Hapus node_modules dan install ulang
+# Remove node_modules and reinstall
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### Frontend tidak menampilkan styles
+### Frontend not displaying styles
 ```bash
-# Build ulang assets
+# Rebuild assets
 npm run build
 ```
 
 ## 📝 Notes
 
-- Pastikan menggunakan PHP 8.2 atau lebih tinggi
-- Untuk production, jangan lupa mengubah `APP_ENV=production` dan `APP_DEBUG=false` di `.env`
-- Backup database secara berkala
-- Untuk production deployment, gunakan queue worker dengan supervisor
-- Konfigurasi mail driver di `.env` untuk email verification
+- Make sure to use PHP 8.2 or higher
+- For production, don't forget to change `APP_ENV=production` and `APP_DEBUG=false` in `.env`
+- Backup database regularly
+- For production deployment, use queue worker with supervisor
+- Configure mail driver in `.env` for email verification
